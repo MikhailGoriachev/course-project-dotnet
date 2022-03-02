@@ -1,0 +1,8 @@
+# фильтр файлов и папок для Git
+
+.git
+HotelApplication/.vs
+HotelApplication/HotelApplicationWPF/bin
+HotelApplication/HotelApplicationWPF/obj
+HotelApplication/HotelClassLibrary/bin
+HotelApplication/HotelClassLibrary/obj
