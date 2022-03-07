@@ -1,17 +1,17 @@
 ﻿-- создание таблиц для базы данных проекта "Гостиница"
 
---set noexec off
---go
+set noexec off
+go
 
---use master
+use master
 
 
----- создание базы данных Hotel
---if db_id('Hotel') is null begin
---	create database Hotel
---	print 'База данных Hotel успешно создана'
---end
---go
+-- создание базы данных Hotel
+if db_id('Hotel') is null begin
+	create database Hotel
+	print 'База данных Hotel успешно создана'
+end
+go
 
 
 -- use Hotel
