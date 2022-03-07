@@ -16,7 +16,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 using HotelClassLibrary.Controllers;        // контроллеры
-using HotelClassLibrary.Utilities;        // утилиты
+using HotelClassLibrary.Utilities;          // утилиты
 
 using HotelClassLibrary.Models;             // модели
 using System.Windows.Threading;
@@ -29,12 +29,12 @@ namespace HotelApplicationWPF
     public partial class MainWindow : Window
     {
         // контроллер заполнения данными БД
-        private HotelController _fillDataController;
+        private HotelController _controller;
 
-        public HotelController FillDataController
+        public HotelController Controller
         {
-            get => _fillDataController;
-            set => _fillDataController = value;
+            get => _controller;
+            set => _controller = value;
         }
 
 
@@ -50,7 +50,7 @@ namespace HotelApplicationWPF
             InitializeComponent();
 
             // установка значений
-            _fillDataController = fillDataController;
+            _controller = fillDataController;
         }
 
         #endregion
@@ -60,6 +60,11 @@ namespace HotelApplicationWPF
         // выход из приложения
         private void Exit_Executed(object sender, ExecutedRoutedEventArgs e) => Application.Current.Shutdown();
 
+
+        // демнострация таблицы Персоны
+        private async void FillTables_Executed(object sender, ExecutedRoutedEventArgs e) => _controller.FillDataBase(new DateTime(2022, 02, 01));
+
+
         // демнострация таблицы График уборки
         private async void ShowTableCleaningSchedule_Executed(object sender, ExecutedRoutedEventArgs e)
         {
@@ -67,7 +72,7 @@ namespace HotelApplicationWPF
             GbxTable.Header = "Загрузка...";
 
             // заполнение DataGrid
-            UpdateBinding(DgdTableData, await Task.Run(_fillDataController.GetCleaningSchedule));
+            UpdateBinding(DgdTableData, await Task.Run(_controller.GetCleaningSchedule));
 
             // вывод наименование таблицы
             GbxTable.Header = "График уборки";
@@ -81,7 +86,7 @@ namespace HotelApplicationWPF
             GbxTable.Header = "Загрузка...";
 
             // заполнение DataGrid
-            UpdateBinding(DgdTableData, await Task.Run(_fillDataController.GetDaysOfWeek));
+            UpdateBinding(DgdTableData, await Task.Run(_controller.GetDaysOfWeek));
 
             // вывод наименование таблицы
             GbxTable.Header = "Дни недели";
@@ -96,7 +101,7 @@ namespace HotelApplicationWPF
             GbxTable.Header = "Загрузка...";
 
             // заполнение DataGrid
-            UpdateBinding(DgdTableData, await Task.Run(_fillDataController.GetCleaningHistory));
+            UpdateBinding(DgdTableData, await Task.Run(_controller.GetCleaningHistory));
 
             // вывод наименование таблицы
             GbxTable.Header = "История фактов уборки";
@@ -111,7 +116,7 @@ namespace HotelApplicationWPF
             GbxTable.Header = "Загрузка...";
 
             // заполнение DataGrid
-            UpdateBinding(DgdTableData, await Task.Run(_fillDataController.GetHistoryRegistrationHotel));
+            UpdateBinding(DgdTableData, await Task.Run(_controller.GetHistoryRegistrationHotel));
 
             // вывод наименование таблицы
             GbxTable.Header = "История поселений в гостиницу";
@@ -126,7 +131,7 @@ namespace HotelApplicationWPF
             GbxTable.Header = "Загрузка...";
 
             // заполнение DataGrid
-            UpdateBinding(DgdTableData, await Task.Run(_fillDataController.GetCities));
+            UpdateBinding(DgdTableData, await Task.Run(_controller.GetCities));
 
             // вывод наименование таблицы
             GbxTable.Header = "Города";
@@ -141,7 +146,7 @@ namespace HotelApplicationWPF
             GbxTable.Header = "Загрузка...";
 
             // заполнение DataGrid
-            UpdateBinding(DgdTableData, await Task.Run(_fillDataController.GetHotelRooms));
+            UpdateBinding(DgdTableData, await Task.Run(_controller.GetHotelRooms));
 
             // вывод наименование таблицы
             GbxTable.Header = "Номера гостиницы";
@@ -156,7 +161,7 @@ namespace HotelApplicationWPF
             GbxTable.Header = "Загрузка...";
 
             // заполнение DataGrid
-            UpdateBinding(DgdTableData, await Task.Run(_fillDataController.GetTypesHotelRoom));
+            UpdateBinding(DgdTableData, await Task.Run(_controller.GetTypesHotelRoom));
 
             // вывод наименование таблицы
             GbxTable.Header = "Типы номеров";
@@ -171,7 +176,7 @@ namespace HotelApplicationWPF
             GbxTable.Header = "Загрузка...";
 
             // заполнение DataGrid
-            UpdateBinding(DgdTableData, await Task.Run(_fillDataController.GetFloors));
+            UpdateBinding(DgdTableData, await Task.Run(_controller.GetFloors));
 
             // вывод наименование таблицы
             GbxTable.Header = "Этажи";
@@ -186,7 +191,7 @@ namespace HotelApplicationWPF
             GbxTable.Header = "Загрузка...";
 
             // заполнение DataGrid
-            UpdateBinding(DgdTableData, await Task.Run(_fillDataController.GetEmployees));
+            UpdateBinding(DgdTableData, await Task.Run(_controller.GetEmployees));
 
             // вывод наименование таблицы
             GbxTable.Header = "Служащие гостиницы";
@@ -201,7 +206,7 @@ namespace HotelApplicationWPF
             GbxTable.Header = "Загрузка...";
 
             // заполнение DataGrid
-            UpdateBinding(DgdTableData, await Task.Run(_fillDataController.GetClients));
+            UpdateBinding(DgdTableData, await Task.Run(_controller.GetClients));
 
             // вывод наименование таблицы
             GbxTable.Header = "Клиенты";
@@ -216,7 +221,7 @@ namespace HotelApplicationWPF
             GbxTable.Header = "Загрузка...";
 
             // заполнение DataGrid
-            UpdateBinding(DgdTableData, await Task.Run(_fillDataController.GetPersons));
+            UpdateBinding(DgdTableData, await Task.Run(_controller.GetPersons));
 
             // вывод наименование таблицы
             GbxTable.Header = "Персоны";
@@ -230,7 +235,8 @@ namespace HotelApplicationWPF
 
 
         // заполнение базы данных данными
-        private void FillDataBase_Click(object sender, RoutedEventArgs e) => _fillDataController.FillDataBase(DateTime.Now.AddDays(-80));
+        //private void FillDataBase_Click(object sender, RoutedEventArgs e) => _controller.FillDataBase(DateTime.Now.AddDays(-80));
+        private void FillDataBase_Click(object sender, RoutedEventArgs e) => _controller.FillDataBase(new DateTime(2022, 02, 01));
 
 
         #region Общие методы

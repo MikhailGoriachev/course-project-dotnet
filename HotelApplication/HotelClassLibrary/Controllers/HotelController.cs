@@ -42,47 +42,47 @@ namespace HotelClassLibrary.Controllers
         #region Получение данных из таблиц
 
         // получить данные из таблицы График уборки				        (CleaningSchedule)
-        public IEnumerable GetCleaningSchedule() => _data.CleaningSchedules;
+        public IEnumerable GetCleaningSchedule() => _data.CleaningScheduleViews;
 
 
         // получить данные из таблицы Дни недели					    (DaysOfWeek)
-        public IEnumerable GetDaysOfWeek() => _data.DaysOfWeeks;
+        public IEnumerable GetDaysOfWeek() => _data.DaysOfWeekViews;
 
 
         // получить данные из таблицы История фактов уборки		        (CleaningHistory)
-        public IEnumerable GetCleaningHistory() => _data.CleaningHistories;
+        public IEnumerable GetCleaningHistory() => _data.CleaningHistoryViews;
 
 
         // получить данные из таблицы История поселений в гостиницу     (HistoryRegistrationHotel)
-        public IEnumerable GetHistoryRegistrationHotel() => _data.HistoryRegistrationHotels;
+        public IEnumerable GetHistoryRegistrationHotel() => _data.HistoryRegistrationHotelViews;
 
 
         // получить данные из таблицы Города					        (Cities)
-        public IEnumerable GetCities() => _data.Cities;
+        public IEnumerable GetCities() => _data.CitiesViews;
 
 
         // получить данные из таблицы Номера гостиницы					(HotelRooms)
-        public IEnumerable GetHotelRooms() => _data.HotelRooms;
+        public IEnumerable GetHotelRooms() => _data.HotelRoomsViews;
 
 
         // получить данные из таблицы Типы номеров						(TypesHotelRoom)
-        public IEnumerable GetTypesHotelRoom() => _data.TypesHotelRooms;
+        public IEnumerable GetTypesHotelRoom() => _data.TypesHotelRoomViews;
 
 
         // получить данные из таблицы Этажи						        (Floors)
-        public IEnumerable GetFloors() => _data.Floors;
+        public IEnumerable GetFloors() => _data.FloorsViews;
 
 
         // получить данные из таблицы Служащие гостиницы				(Employees)
-        public IEnumerable GetEmployees() => _data.Employees;
+        public IEnumerable GetEmployees() => _data.EmployeesViews;
 
 
         // получить данные из таблицы Клиенты							(Clients)
-        public IEnumerable GetClients() => _data.Clients;
+        public IEnumerable GetClients() => _data.ClientsViews;
 
 
         // получить данные из таблицы Персоны							(Persons)
-        public IEnumerable GetPersons() => _data.Persons;
+        public IEnumerable GetPersons() => _data.PersonsViews;
 
 
         #endregion
@@ -106,7 +106,8 @@ namespace HotelClassLibrary.Controllers
             FillTypesHotelRoomTable();
 
             // заполнение таблицы Этажи                             (Floors)
-            FillFloorsTable(Utils.GetRand(3, 6));
+            //FillFloorsTable(Utils.GetRand(3, 6));
+            FillFloorsTable(4);
 
             // заполнение таблицы Номера гостиницы				    (HotelRooms)
             FillHotelRoomsTable(Utils.GetRand(10, 15), Utils.GetRand(10, 15), Utils.GetRand(10, 15), Utils.GetRand(2, 4));

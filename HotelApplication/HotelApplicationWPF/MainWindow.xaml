@@ -17,6 +17,9 @@
         <CommandBinding Command="models:WindowCommands.Exit"                              Executed="Exit_Executed"/>
         
         <!-- демонстрация таблицы График уборки -->
+        <CommandBinding Command="models:WindowCommands.FillTables"                        Executed="FillTables_Executed"/>
+        
+        <!-- демонстрация таблицы График уборки -->
         <CommandBinding Command="models:WindowCommands.ShowTableCleaningSchedule"         Executed="ShowTableCleaningSchedule_Executed"/>
 
         <!-- демонстрация таблицы Дни недели -->
@@ -81,7 +84,7 @@
             <MenuItem Header="Таблицы">
 
                 <!-- Заполнение базы данных -->
-                <MenuItem Header="Заполнение базы данных" Height="32" Foreground="Black" Click="FillDataBase_Click"/>
+                <MenuItem Command="models:WindowCommands.FillTables" Header="Заполнение базы данных" Height="32" Foreground="Black"/>
 
                 <Separator/>
 

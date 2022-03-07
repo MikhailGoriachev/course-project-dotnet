@@ -1,106 +1,359 @@
 ﻿-- заполнение таблиц для базы данных проекта "Гостиница"
 
--- удаление таблиц
-drop table if exists CleaningSchedule				-- таблица Персоны							(Persons)
-drop table if exists DaysOfWeek						-- таблица Клиенты							(Clients)
-drop table if exists CleaningHistory				-- таблица Служащие гостиницы				(Employees)
-drop table if exists HistoryRegistrationHotel		-- таблица Типы номеров						(TypesHotelRoom)
-drop table if exists Cities							-- таблица Номера гостиницы					(HotelRooms)
-drop table if exists HotelRooms						-- таблица Города							(Cities)
-drop table if exists TypesHotelRoom					-- таблица История поселений в гостиницу	(HistoryRegistrationHotel)
-drop table if exists Employees						-- таблица История фактов уборки			(CleaningHistory)
-drop table if exists Clients						-- таблица Дни недели						(DaysOfWeek)
-drop table if exists Persons						-- таблица График уборки					(CleaningSchedule)
+set noexec off
 go
 
--- заполнение таблицы Персоны							(Persons)
-create table Persons (
-	Id			int					not null	primary key identity,
-	Surname		nvarchar(60)		not null,	-- Фамилия
-	[Name]		nvarchar(40)		not null,	-- Имя
-	Patronymic	nvarchar(60)		not null	-- Отчество
-);
+use Hotel
+go
+
+-- очистка таблиц
+delete from CleaningSchedule				-- таблица Персоны							(Persons)
+delete from DaysOfWeek						-- таблица Клиенты							(Clients)
+delete from CleaningHistory					-- таблица Служащие гостиницы				(Employees)
+delete from HistoryRegistrationHotel		-- таблица Типы номеров						(TypesHotelRoom)
+delete from Cities							-- таблица Номера гостиницы					(HotelRooms)
+delete from HotelRooms						-- таблица Города							(Cities)
+delete from TypesHotelRoom					-- таблица История поселений в гостиницу	(HistoryRegistrationHotel)
+delete from Floors							-- заполнение таблицы Этажи					(Floors)
+delete from Employees						-- таблица История фактов уборки			(CleaningHistory)
+delete from Clients							-- таблица Дни недели						(DaysOfWeek)
+delete from Persons							-- таблица График уборки					(CleaningSchedule)
+go
+
+
+-- обнуление идентификаторов
+dbcc checkident				(CleaningSchedule,			reseed, 0);	
+dbcc checkident				(DaysOfWeek,				reseed, 0);
+dbcc checkident				(CleaningHistory,			reseed, 0);	
+dbcc checkident				(HistoryRegistrationHotel,	reseed, 0);
+dbcc checkident				(Cities,					reseed, 0);
+dbcc checkident				(HotelRooms,				reseed, 0);
+dbcc checkident				(TypesHotelRoom,			reseed, 0);
+dbcc checkident				(Floors,					reseed, 0);
+dbcc checkident				(Employees,					reseed, 0);
+dbcc checkident				(Clients,					reseed, 0);	
+dbcc checkident				(Persons,					reseed, 0);
 go
 
 
 -- заполнение таблицы Клиенты							(Clients)
-create table Clients (
-	Id			int					not null	primary key identity,
-	IdPerson	int					not null	foreign key references Persons(Id),	-- Персона
-	Passport	nvarchar(10)		not null	-- Номер паспорта
-);
+insert into Persons (Surname, [Name], Patronymic)
+values
+	('Карпов',            'Максим',        'Иванович'),		-- 1
+	('Андреева',          'Злата',         'Игоревна'),		-- 2
+	('Петров',            'Даниил',        'Артёмович'),	-- 3
+	('Воронина',          'Виктория',      'Максимовна'),	-- 4
+	('Зубов',             'Артём',         'Даниилович'),	-- 5
+	('Коровин',           'Владимир',      'Максимович'),	-- 6
+	('Иванов',            'Николай',       'Никитич'),		-- 7
+	('Евсеева',           'Амелия',        'Сергеевна'),	-- 8
+	('Кондратьева',       'Аиша',          'Семёновна'),	-- 9
+	('Васильева',         'Ева',           'Алексеевна'),	-- 10
+	('Селезнева',         'Мария',         'Львовна'),		-- 11
+	('Соколов',           'Виктор',        'Сергеевич'),	-- 12
+	('Блохина',           'Евгения',       'Максимовна'),	-- 13
+	('Коновалова',        'Дарья',         'Саввична'),		-- 14
+	('Фролов',            'Станислав',     'Артёмович'),	-- 15
+	('Столярова',         'Алиса',         'Андреевна'),	-- 16
+	('Королева',          'Вера',          'Родионовна'),	-- 17
+	('Сергеева',          'Полина',        'Артемьевна'),	-- 18
+	('Леонова',           'Софья',         'Мироновна'),	-- 19
+	('Васильева',         'Ева',           'Алексеевна'),	-- 20
+	('Белоусова',         'Анна',          'Захаровна'),	-- 21
+	('Дубровин',          'Александр',     'Дмитриевич'),	-- 22
+	('Широков',           'Григорий',      'Дмитриевич'),	-- 23
+	('Виноградова',       'Кира',          'Кирилловна'),	-- 24
+	('Столярова',         'Алиса',         'Андреевна'),	-- 25
+	('Смирнова',          'Серафима',      'Леонидовна'),	-- 26
+	('Карпов',            'Максим',        'Иванович'),		-- 27
+	('Власова',           'Анна',          'Алексеевна'),	-- 28
+	('Иванов',            'Николай',       'Никитич'),		-- 29
+	('Данилова',          'Валерия',       'Львовна')		-- 30
+go
+
+
+-- заполнение таблицы Клиенты							(Clients)
+insert into Clients (IdPerson, Passport)
+values
+	(1,		'312038275'),		-- 1
+	(2,		'925348007'),		-- 2
+	(3,		'697170796'),		-- 3
+	(4,		'184238352'),		-- 4
+	(5,		'367793097'),		-- 5
+	(6,		'631744412'),		-- 6
+	(7,		'031921839'),		-- 7
+	(8,		'457560191'),		-- 8
+	(9,		'071688767'),		-- 9
+	(10,	'322000574'),		-- 10
+	(11,	'469141551'),		-- 11
+	(12,	'250823141'),		-- 12
+	(13,	'316121274'),		-- 13
+	(14,	'535283702'),		-- 14
+	(15,	'215358238')		-- 15
 go
 
 
 -- заполнение таблицы Служащие гостиницы				(Employees)
-create table Employees (
-	Id			int					not null	primary key identity,
-	IdPerson	int					not null	foreign key references Persons(Id),	-- Персона
-	WorkState	bit					not null	-- Статус работы: уволен/работает
-);
+insert into Employees (IdPerson, WorkState)
+values
+	(16,	1),			-- 1
+	(17,	0),			-- 2
+	(18,	0),			-- 3
+	(19,	0),			-- 4
+	(20,	1),			-- 5
+	(21,	0),			-- 6
+	(22,	1),			-- 7
+	(23,	1),			-- 8
+	(24,	1),			-- 9
+	(25,	0),			-- 10
+	(27,	0),			-- 11
+	(26,	0),			-- 12
+	(28,	1),			-- 13
+	(29,	0),			-- 14
+	(30,	1)			-- 15
 go
 
+
 -- заполнение таблицы Типы номеров					(TypesHotelRoom)
-create table TypesHotelRoom (
-	Id			int					not null	primary key identity,
-	[Name]		nvarchar(40)		not null,	-- Название типа
-	CountRooms	int					not null	-- Количество комнат
-);
+insert into TypesHotelRoom ([Name], CountRooms, Price)
+values
+	('Одноместный',	1,	3500),		-- 1
+	('Двухместный',	2,	4300),		-- 2
+	('Трехместный',	3,	5500)		-- 3
+go
+
+
+-- заполнение таблицы Этажи							(Floors)
+insert into Floors (Number) 
+values
+	(1),	-- 1
+	(2),	-- 2
+	(3)		-- 3
+go
+
 
 
 -- заполнение таблицы Номера гостиницы				(HotelRooms)
-create table HotelRooms (
-	Id					int			not null	primary key identity,
-	IdTypeHotelRoom		int			not null	foreign key references TypesHotelRoom(Id),		-- Тип номера
-	Number				int			not null,	-- Номер гостиничного номера
-	[Level]				int			not null,	-- Этаж		
-	[State]				bit			not null	-- Статус (занят/свободен)
-);
+insert into HotelRooms (IdFloor, IdTypeHotelRoom, Number, [State])
+values
+	(1,	1,	1,	1),		-- 1
+	(1,	2,	2,	1),		-- 2
+	(1,	2,	3,	1),		-- 3
+	(1,	1,	4,	1),		-- 4
+	(1,	3,	5,	1),		-- 5
+	(1,	1,	6,	1),		-- 6
+	(1,	1,	7,	1),		-- 7
+	(1,	2,	8,	1),		-- 8
+	(1,	3,	9,	1),		-- 9
+	(1,	1,	10,	0),		-- 10
+	(1,	2,	11,	1),		-- 11
+	(1,	2,	12,	0),		-- 12
+	(2,	2,	13,	0),		-- 13
+	(2,	1,	14,	0),		-- 14
+	(2,	1,	15,	1),		-- 15
+	(2,	2,	16,	0),		-- 16
+	(2,	2,	17,	0),		-- 17
+	(2,	2,	18,	0),		-- 18
+	(2,	2,	19,	1),		-- 19
+	(2,	1,	20,	0),		-- 20
+	(2,	1,	21,	0),		-- 21
+	(2,	1,	22,	1),		-- 22
+	(3,	3,	23,	1),		-- 23
+	(3,	1,	24,	0),		-- 24
+	(3,	1,	25,	1),		-- 25
+	(3,	2,	26,	1),		-- 26
+	(3,	1,	27,	0),		-- 27
+	(3,	2,	28,	1),		-- 28
+	(3,	1,	29,	1),		-- 29
+	(3,	2,	30,	1),		-- 30
+	(3,	2,	31,	0),		-- 31
+	(3,	3,	32,	0),		-- 32
+	(3,	1,	33,	1),		-- 33
+	(3,	3,	34,	0)		-- 34
 go
 
 
 -- заполнение таблицы Города							(Cities)
-create table Cities (
-	Id					int				not null	primary key identity,
-	[Name]				nvarchar(60)	not null	-- Наименование города
-);
+insert into Cities ([Name])
+values
+	('Киев'),				-- 1
+	('Харьков'),			-- 2
+	('Одесса'),				-- 3
+	('Днепр'),				-- 4
+	('Донецк'),				-- 5
+	('Запорожье'),			-- 6
+	('Львов'),				-- 7
+	('Кривой Рог')			-- 8
 go
 
 
 -- заполнение таблицы История поселений в гостиницу	(HistoryRegistrationHotel)
-create table HistoryRegistrationHotel (
-	Id					int			not null	primary key identity,
-	IdClient			int			not null	foreign key references Clients(Id),		-- Клиент
-	IdHotelRoom			int			not null	foreign key references HotelRooms(Id),	-- Гостиничный номер
-	IdCity				int			not null	foreign key references Cities(Id),		-- Город, из которого прибыл клиент
-	RegistrationDate	date		not null,	-- Дата поселения
-	Duration			int			not null	-- Длительность проживания 
-);
+insert into HistoryRegistrationHotel (IdClient, IdHotelRoom, IdCity, RegistrationDate, Duration)
+values
+	(1,		17,		5,	'04.03.2022',	2),		-- 1
+	(3,		3,		5,	'02.03.2022',	5),		-- 2
+	(3,		14,		8,	'04.03.2022',	4),		-- 3
+	(8,		12,		8,	'03.03.2022',	1),		-- 4
+	(12,	7,		1,	'06.03.2022',	3),		-- 5
+	(12,	25,		7,	'06.03.2022',	1),		-- 6
+	(4,		31,		2,	'03.03.2022',	5),		-- 7
+	(13,	3,		2,	'01.03.2022',	3),		-- 8
+	(2,		3,		5,	'04.03.2022',	4),		-- 9
+	(4,		20,		3,	'01.03.2022',	6),		-- 10
+	(6,		16,		3,	'04.03.2022',	1),		-- 11
+	(15,	33,		8,	'06.03.2022',	4),		-- 12
+	(14,	8,		6,	'04.03.2022',	3),		-- 13
+	(11,	2,		8,	'04.03.2022',	6),		-- 14
+	(11,	2,		8,	'03.03.2022',	4)		-- 15
 go
 
 
 -- заполнение таблицы История фактов уборки			(CleaningHistory)
-create table CleaningHistory (
-	Id					int			not null	primary key identity,
-	[Level]				int			not null,	-- Этаж
-	DateCleaning		date		not null,	-- Дата уборки
-	IdEmployee			int			not null	foreign key references Employees(Id)	-- Служащий гостиницы
-);
+insert into CleaningHistory (IdFloor, DateCleaning, IdEmployee)
+values
+	(1,	'2022.02.01',	4),
+	(2,	'2022.02.01',	4),
+	(3,	'2022.02.01',	11),
+	(1,	'2022.02.02',	1),
+	(2,	'2022.02.02',	11),
+	(3,	'2022.02.02',	12),
+	(1,	'2022.02.03',	14),
+	(2,	'2022.02.03',	3),
+	(3,	'2022.02.03',	2),
+	(1,	'2022.02.04',	1),
+	(2,	'2022.02.04',	3),
+	(3,	'2022.02.04',	1),
+	(1,	'2022.02.05',	1),
+	(2,	'2022.02.05',	5),
+	(3,	'2022.02.05',	3),
+	(1,	'2022.02.06',	2),
+	(2,	'2022.02.06',	5),
+	(3,	'2022.02.06',	3),
+	(1,	'2022.02.07',	2),
+	(2,	'2022.02.07',	10),
+	(3,	'2022.02.07',	13),
+	(1,	'2022.02.08',	4),
+	(2,	'2022.02.08',	4),
+	(3,	'2022.02.08',	11),
+	(1,	'2022.02.09',	1),
+	(2,	'2022.02.09',	11),
+	(3,	'2022.02.09',	12),
+	(1,	'2022.02.10',	14),
+	(2,	'2022.02.10',	3),
+	(3,	'2022.02.10',	2),
+	(1,	'2022.02.11',	1),
+	(2,	'2022.02.11',	3),
+	(3,	'2022.02.11',	1),
+	(1,	'2022.02.12',	1),
+	(2,	'2022.02.12',	5),
+	(3,	'2022.02.12',	3),
+	(1,	'2022.02.13',	2),
+	(2,	'2022.02.13',	5),
+	(3,	'2022.02.13',	3),
+	(1,	'2022.02.14',	2),
+	(2,	'2022.02.14',	10),
+	(3,	'2022.02.14',	13),
+	(1,	'2022.02.15',	4),
+	(2,	'2022.02.15',	4),
+	(3,	'2022.02.15',	11),
+	(1,	'2022.02.16',	1),
+	(2,	'2022.02.16',	11),
+	(3,	'2022.02.16',	12),
+	(1,	'2022.02.17',	14),
+	(2,	'2022.02.17',	3),
+	(3,	'2022.02.17',	2),
+	(1,	'2022.02.18',	1),
+	(2,	'2022.02.18',	3),
+	(3,	'2022.02.18',	1),
+	(1,	'2022.02.19',	1),
+	(2,	'2022.02.19',	5),
+	(3,	'2022.02.19',	3),
+	(1,	'2022.02.20',	2),
+	(2,	'2022.02.20',	5),
+	(3,	'2022.02.20',	3),
+	(1,	'2022.02.21',	2),
+	(2,	'2022.02.21',	10),
+	(3,	'2022.02.21',	13),
+	(1,	'2022.02.22',	4),
+	(2,	'2022.02.22',	4),
+	(3,	'2022.02.22',	11),
+	(1,	'2022.02.23',	1),
+	(2,	'2022.02.23',	11),
+	(3,	'2022.02.23',	12),
+	(1,	'2022.02.24',	14),
+	(2,	'2022.02.24',	3),
+	(3,	'2022.02.24',	2),
+	(1,	'2022.02.25',	1),
+	(2,	'2022.02.25',	3),
+	(3,	'2022.02.25',	1),
+	(1,	'2022.02.26',	1),
+	(2,	'2022.02.26',	5),
+	(3,	'2022.02.26',	3),
+	(1,	'2022.02.27',	2),
+	(2,	'2022.02.27',	5),
+	(3,	'2022.02.27',	3),
+	(1,	'2022.02.28',	2),
+	(2,	'2022.02.28',	10),
+	(3,	'2022.02.28',	13),
+	(1,	'2022.03.01',	4),
+	(2,	'2022.03.01',	4),
+	(3,	'2022.03.01',	11),
+	(1,	'2022.03.02',	1),
+	(2,	'2022.03.02',	11),
+	(3,	'2022.03.02',	12),
+	(1,	'2022.03.03',	14),
+	(2,	'2022.03.03',	3),
+	(3,	'2022.03.03',	2),
+	(1,	'2022.03.04',	1),
+	(2,	'2022.03.04',	3),
+	(3,	'2022.03.04',	1),
+	(1,	'2022.03.05',	1),
+	(2,	'2022.03.05',	5),
+	(3,	'2022.03.05',	3),
+	(1,	'2022.03.06',	2),
+	(2,	'2022.03.06',	5),
+	(3,	'2022.03.06',	3),
+	(1,	'2022.03.07',	2),
+	(2,	'2022.03.07',	10),
+	(3,	'2022.03.07',	13)
 go
 
 
 -- заполнение таблицы Дни недели						(DaysOfWeek)
-create table DaysOfWeek (
-	Id				int				not null	primary key identity,
-	[Name]			nvarchar(20)	not null,	-- Название дня недели
-);
+insert into DaysOfWeek ([Name], Number)
+values
+	('Воскресенье',		1),		-- 1
+	('Понедельник',		2),		-- 2
+	('Вторник',			3),		-- 3
+	('Среда',			4),		-- 4
+	('Четверг',			5),		-- 5
+	('Пятница',			6),		-- 6
+	('Суббота',			7)		-- 7
 go
 
 
 -- заполнение таблицы График уборки					(CleaningSchedule)
-create table CleaningSchedule (
-	Id					int			not null	primary key identity,
-	IdDayOfWeek			int			not null	foreign key references DaysOfWeek(Id),		-- День недели
-	IdEmployee			int			not null	foreign key references Employees(Id)		-- Служащий гостиницы
-);
+insert into CleaningSchedule (IdDayOfWeek, IdEmployee, IdFloor)
+values
+	(1,	2,	1),		-- 1
+	(1,	5,	2),		-- 2
+	(1,	3,	3),		-- 3
+	(2,	2,	1),		-- 4
+	(2,	10,	2),		-- 5
+	(2,	13,	3),		-- 6
+	(3,	4,	1),		-- 7
+	(3,	4,	2),		-- 8
+	(3,	11,	3),		-- 9
+	(4,	1,	1),		-- 10
+	(4,	11,	2),		-- 11
+	(4,	12,	3),		-- 12
+	(5,	14,	1),		-- 13
+	(5,	3,	2),		-- 14
+	(5,	2,	3),		-- 15
+	(6,	1,	1),		-- 16
+	(6,	3,	2),		-- 17
+	(6,	1,	3),		-- 18
+	(7,	1,	1),		-- 19
+	(7,	5,	2),		-- 20
+	(7,	3,	3)		-- 21
 go

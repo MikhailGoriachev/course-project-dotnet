@@ -72,6 +72,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Scripts\CreateViews.sql" />
     <Content Include="Scripts\Queries.sql" />
     <Content Include="Scripts\FillTables.sql" />
     <Content Include="Scripts\CreateTables.sql" />

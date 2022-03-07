@@ -1,5 +1,21 @@
 ﻿-- создание таблиц для базы данных проекта "Гостиница"
 
+--set noexec off
+--go
+
+--use master
+
+
+---- создание базы данных Hotel
+--if db_id('Hotel') is null begin
+--	create database Hotel
+--	print 'База данных Hotel успешно создана'
+--end
+--go
+
+
+-- use Hotel
+
 -- удаление таблиц
 drop table if exists CleaningSchedule				-- таблица График уборки					(CleaningSchedule)
 drop table if exists DaysOfWeek						-- таблица Дни недели						(DaysOfWeek)

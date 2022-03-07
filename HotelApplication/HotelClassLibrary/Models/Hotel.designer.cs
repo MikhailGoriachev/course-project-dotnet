@@ -182,6 +182,94 @@ namespace HotelClassLibrary.Models
 				return this.GetTable<CleaningHistory>();
 			}
 		}
+		
+		public System.Data.Linq.Table<CitiesView> CitiesViews
+		{
+			get
+			{
+				return this.GetTable<CitiesView>();
+			}
+		}
+		
+		public System.Data.Linq.Table<CleaningHistoryView> CleaningHistoryViews
+		{
+			get
+			{
+				return this.GetTable<CleaningHistoryView>();
+			}
+		}
+		
+		public System.Data.Linq.Table<CleaningScheduleView> CleaningScheduleViews
+		{
+			get
+			{
+				return this.GetTable<CleaningScheduleView>();
+			}
+		}
+		
+		public System.Data.Linq.Table<ClientsView> ClientsViews
+		{
+			get
+			{
+				return this.GetTable<ClientsView>();
+			}
+		}
+		
+		public System.Data.Linq.Table<DaysOfWeekView> DaysOfWeekViews
+		{
+			get
+			{
+				return this.GetTable<DaysOfWeekView>();
+			}
+		}
+		
+		public System.Data.Linq.Table<EmployeesView> EmployeesViews
+		{
+			get
+			{
+				return this.GetTable<EmployeesView>();
+			}
+		}
+		
+		public System.Data.Linq.Table<FloorsView> FloorsViews
+		{
+			get
+			{
+				return this.GetTable<FloorsView>();
+			}
+		}
+		
+		public System.Data.Linq.Table<HistoryRegistrationHotelView> HistoryRegistrationHotelViews
+		{
+			get
+			{
+				return this.GetTable<HistoryRegistrationHotelView>();
+			}
+		}
+		
+		public System.Data.Linq.Table<HotelRoomsView> HotelRoomsViews
+		{
+			get
+			{
+				return this.GetTable<HotelRoomsView>();
+			}
+		}
+		
+		public System.Data.Linq.Table<PersonsView> PersonsViews
+		{
+			get
+			{
+				return this.GetTable<PersonsView>();
+			}
+		}
+		
+		public System.Data.Linq.Table<TypesHotelRoomView> TypesHotelRoomViews
+		{
+			get
+			{
+				return this.GetTable<TypesHotelRoomView>();
+			}
+		}
 	}
 	
 	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.Cities")]
@@ -2386,6 +2474,969 @@ namespace HotelClassLibrary.Models
 			if ((this.PropertyChanged != null))
 			{
 				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.CitiesView")]
+	public partial class CitiesView
+	{
+		
+		private int _Id;
+		
+		private string _Name;
+		
+		public CitiesView()
+		{
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Id", AutoSync=AutoSync.Always, DbType="Int NOT NULL IDENTITY", IsDbGenerated=true)]
+		public int Id
+		{
+			get
+			{
+				return this._Id;
+			}
+			set
+			{
+				if ((this._Id != value))
+				{
+					this._Id = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Name", DbType="NVarChar(60) NOT NULL", CanBeNull=false)]
+		public string Name
+		{
+			get
+			{
+				return this._Name;
+			}
+			set
+			{
+				if ((this._Name != value))
+				{
+					this._Name = value;
+				}
+			}
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.CleaningHistoryView")]
+	public partial class CleaningHistoryView
+	{
+		
+		private int _Id;
+		
+		private int _Number;
+		
+		private System.DateTime _DateCleaning;
+		
+		private string _Employee;
+		
+		public CleaningHistoryView()
+		{
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Id", DbType="Int NOT NULL")]
+		public int Id
+		{
+			get
+			{
+				return this._Id;
+			}
+			set
+			{
+				if ((this._Id != value))
+				{
+					this._Id = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Number", DbType="Int NOT NULL")]
+		public int Number
+		{
+			get
+			{
+				return this._Number;
+			}
+			set
+			{
+				if ((this._Number != value))
+				{
+					this._Number = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_DateCleaning", DbType="Date NOT NULL")]
+		public System.DateTime DateCleaning
+		{
+			get
+			{
+				return this._DateCleaning;
+			}
+			set
+			{
+				if ((this._DateCleaning != value))
+				{
+					this._DateCleaning = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Employee", DbType="NVarChar(66)")]
+		public string Employee
+		{
+			get
+			{
+				return this._Employee;
+			}
+			set
+			{
+				if ((this._Employee != value))
+				{
+					this._Employee = value;
+				}
+			}
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.CleaningScheduleView")]
+	public partial class CleaningScheduleView
+	{
+		
+		private int _Id;
+		
+		private string _DayOfWeek;
+		
+		private string _Employee;
+		
+		private int _Number;
+		
+		public CleaningScheduleView()
+		{
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Id", DbType="Int NOT NULL")]
+		public int Id
+		{
+			get
+			{
+				return this._Id;
+			}
+			set
+			{
+				if ((this._Id != value))
+				{
+					this._Id = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_DayOfWeek", DbType="NVarChar(20) NOT NULL", CanBeNull=false)]
+		public string DayOfWeek
+		{
+			get
+			{
+				return this._DayOfWeek;
+			}
+			set
+			{
+				if ((this._DayOfWeek != value))
+				{
+					this._DayOfWeek = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Employee", DbType="NVarChar(66)")]
+		public string Employee
+		{
+			get
+			{
+				return this._Employee;
+			}
+			set
+			{
+				if ((this._Employee != value))
+				{
+					this._Employee = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Number", DbType="Int NOT NULL")]
+		public int Number
+		{
+			get
+			{
+				return this._Number;
+			}
+			set
+			{
+				if ((this._Number != value))
+				{
+					this._Number = value;
+				}
+			}
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.ClientsView")]
+	public partial class ClientsView
+	{
+		
+		private int _Id;
+		
+		private string _Surname;
+		
+		private string _Name;
+		
+		private string _Patronymic;
+		
+		private string _Passport;
+		
+		public ClientsView()
+		{
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Id", DbType="Int NOT NULL")]
+		public int Id
+		{
+			get
+			{
+				return this._Id;
+			}
+			set
+			{
+				if ((this._Id != value))
+				{
+					this._Id = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Surname", DbType="NVarChar(60) NOT NULL", CanBeNull=false)]
+		public string Surname
+		{
+			get
+			{
+				return this._Surname;
+			}
+			set
+			{
+				if ((this._Surname != value))
+				{
+					this._Surname = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Name", DbType="NVarChar(40) NOT NULL", CanBeNull=false)]
+		public string Name
+		{
+			get
+			{
+				return this._Name;
+			}
+			set
+			{
+				if ((this._Name != value))
+				{
+					this._Name = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Patronymic", DbType="NVarChar(60) NOT NULL", CanBeNull=false)]
+		public string Patronymic
+		{
+			get
+			{
+				return this._Patronymic;
+			}
+			set
+			{
+				if ((this._Patronymic != value))
+				{
+					this._Patronymic = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Passport", DbType="NVarChar(15) NOT NULL", CanBeNull=false)]
+		public string Passport
+		{
+			get
+			{
+				return this._Passport;
+			}
+			set
+			{
+				if ((this._Passport != value))
+				{
+					this._Passport = value;
+				}
+			}
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.DaysOfWeekView")]
+	public partial class DaysOfWeekView
+	{
+		
+		private int _Id;
+		
+		private string _Name;
+		
+		private int _Number;
+		
+		public DaysOfWeekView()
+		{
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Id", AutoSync=AutoSync.Always, DbType="Int NOT NULL IDENTITY", IsDbGenerated=true)]
+		public int Id
+		{
+			get
+			{
+				return this._Id;
+			}
+			set
+			{
+				if ((this._Id != value))
+				{
+					this._Id = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Name", DbType="NVarChar(20) NOT NULL", CanBeNull=false)]
+		public string Name
+		{
+			get
+			{
+				return this._Name;
+			}
+			set
+			{
+				if ((this._Name != value))
+				{
+					this._Name = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Number", DbType="Int NOT NULL")]
+		public int Number
+		{
+			get
+			{
+				return this._Number;
+			}
+			set
+			{
+				if ((this._Number != value))
+				{
+					this._Number = value;
+				}
+			}
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.EmployeesView")]
+	public partial class EmployeesView
+	{
+		
+		private int _Id;
+		
+		private string _Surname;
+		
+		private string _Name;
+		
+		private string _Patronymic;
+		
+		private bool _WorkState;
+		
+		public EmployeesView()
+		{
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Id", DbType="Int NOT NULL")]
+		public int Id
+		{
+			get
+			{
+				return this._Id;
+			}
+			set
+			{
+				if ((this._Id != value))
+				{
+					this._Id = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Surname", DbType="NVarChar(60) NOT NULL", CanBeNull=false)]
+		public string Surname
+		{
+			get
+			{
+				return this._Surname;
+			}
+			set
+			{
+				if ((this._Surname != value))
+				{
+					this._Surname = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Name", DbType="NVarChar(40) NOT NULL", CanBeNull=false)]
+		public string Name
+		{
+			get
+			{
+				return this._Name;
+			}
+			set
+			{
+				if ((this._Name != value))
+				{
+					this._Name = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Patronymic", DbType="NVarChar(60) NOT NULL", CanBeNull=false)]
+		public string Patronymic
+		{
+			get
+			{
+				return this._Patronymic;
+			}
+			set
+			{
+				if ((this._Patronymic != value))
+				{
+					this._Patronymic = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_WorkState", DbType="Bit NOT NULL")]
+		public bool WorkState
+		{
+			get
+			{
+				return this._WorkState;
+			}
+			set
+			{
+				if ((this._WorkState != value))
+				{
+					this._WorkState = value;
+				}
+			}
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.FloorsView")]
+	public partial class FloorsView
+	{
+		
+		private int _Id;
+		
+		private int _Number;
+		
+		public FloorsView()
+		{
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Id", AutoSync=AutoSync.Always, DbType="Int NOT NULL IDENTITY", IsDbGenerated=true)]
+		public int Id
+		{
+			get
+			{
+				return this._Id;
+			}
+			set
+			{
+				if ((this._Id != value))
+				{
+					this._Id = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Number", DbType="Int NOT NULL")]
+		public int Number
+		{
+			get
+			{
+				return this._Number;
+			}
+			set
+			{
+				if ((this._Number != value))
+				{
+					this._Number = value;
+				}
+			}
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.HistoryRegistrationHotelView")]
+	public partial class HistoryRegistrationHotelView
+	{
+		
+		private int _Id;
+		
+		private string _Client;
+		
+		private string _Passport;
+		
+		private int _FloorNumber;
+		
+		private int _RoomNumber;
+		
+		private string _City;
+		
+		private System.DateTime _RegistrationDate;
+		
+		private int _Duration;
+		
+		public HistoryRegistrationHotelView()
+		{
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Id", DbType="Int NOT NULL")]
+		public int Id
+		{
+			get
+			{
+				return this._Id;
+			}
+			set
+			{
+				if ((this._Id != value))
+				{
+					this._Id = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Client", DbType="NVarChar(66)")]
+		public string Client
+		{
+			get
+			{
+				return this._Client;
+			}
+			set
+			{
+				if ((this._Client != value))
+				{
+					this._Client = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Passport", DbType="NVarChar(15) NOT NULL", CanBeNull=false)]
+		public string Passport
+		{
+			get
+			{
+				return this._Passport;
+			}
+			set
+			{
+				if ((this._Passport != value))
+				{
+					this._Passport = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FloorNumber", DbType="Int NOT NULL")]
+		public int FloorNumber
+		{
+			get
+			{
+				return this._FloorNumber;
+			}
+			set
+			{
+				if ((this._FloorNumber != value))
+				{
+					this._FloorNumber = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_RoomNumber", DbType="Int NOT NULL")]
+		public int RoomNumber
+		{
+			get
+			{
+				return this._RoomNumber;
+			}
+			set
+			{
+				if ((this._RoomNumber != value))
+				{
+					this._RoomNumber = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_City", DbType="NVarChar(60) NOT NULL", CanBeNull=false)]
+		public string City
+		{
+			get
+			{
+				return this._City;
+			}
+			set
+			{
+				if ((this._City != value))
+				{
+					this._City = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_RegistrationDate", DbType="Date NOT NULL")]
+		public System.DateTime RegistrationDate
+		{
+			get
+			{
+				return this._RegistrationDate;
+			}
+			set
+			{
+				if ((this._RegistrationDate != value))
+				{
+					this._RegistrationDate = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Duration", DbType="Int NOT NULL")]
+		public int Duration
+		{
+			get
+			{
+				return this._Duration;
+			}
+			set
+			{
+				if ((this._Duration != value))
+				{
+					this._Duration = value;
+				}
+			}
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.HotelRoomsView")]
+	public partial class HotelRoomsView
+	{
+		
+		private int _Id;
+		
+		private string _TypeRoom;
+		
+		private int _CountRooms;
+		
+		private int _Price;
+		
+		private int _FloorNumber;
+		
+		private int _Number;
+		
+		private bool _State;
+		
+		public HotelRoomsView()
+		{
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Id", DbType="Int NOT NULL")]
+		public int Id
+		{
+			get
+			{
+				return this._Id;
+			}
+			set
+			{
+				if ((this._Id != value))
+				{
+					this._Id = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_TypeRoom", DbType="NVarChar(40) NOT NULL", CanBeNull=false)]
+		public string TypeRoom
+		{
+			get
+			{
+				return this._TypeRoom;
+			}
+			set
+			{
+				if ((this._TypeRoom != value))
+				{
+					this._TypeRoom = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_CountRooms", DbType="Int NOT NULL")]
+		public int CountRooms
+		{
+			get
+			{
+				return this._CountRooms;
+			}
+			set
+			{
+				if ((this._CountRooms != value))
+				{
+					this._CountRooms = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Price", DbType="Int NOT NULL")]
+		public int Price
+		{
+			get
+			{
+				return this._Price;
+			}
+			set
+			{
+				if ((this._Price != value))
+				{
+					this._Price = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FloorNumber", DbType="Int NOT NULL")]
+		public int FloorNumber
+		{
+			get
+			{
+				return this._FloorNumber;
+			}
+			set
+			{
+				if ((this._FloorNumber != value))
+				{
+					this._FloorNumber = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Number", DbType="Int NOT NULL")]
+		public int Number
+		{
+			get
+			{
+				return this._Number;
+			}
+			set
+			{
+				if ((this._Number != value))
+				{
+					this._Number = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_State", DbType="Bit NOT NULL")]
+		public bool State
+		{
+			get
+			{
+				return this._State;
+			}
+			set
+			{
+				if ((this._State != value))
+				{
+					this._State = value;
+				}
+			}
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.PersonsView")]
+	public partial class PersonsView
+	{
+		
+		private int _Id;
+		
+		private string _Surname;
+		
+		private string _Name;
+		
+		private string _Patronymic;
+		
+		public PersonsView()
+		{
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Id", AutoSync=AutoSync.Always, DbType="Int NOT NULL IDENTITY", IsDbGenerated=true)]
+		public int Id
+		{
+			get
+			{
+				return this._Id;
+			}
+			set
+			{
+				if ((this._Id != value))
+				{
+					this._Id = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Surname", DbType="NVarChar(60) NOT NULL", CanBeNull=false)]
+		public string Surname
+		{
+			get
+			{
+				return this._Surname;
+			}
+			set
+			{
+				if ((this._Surname != value))
+				{
+					this._Surname = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Name", DbType="NVarChar(40) NOT NULL", CanBeNull=false)]
+		public string Name
+		{
+			get
+			{
+				return this._Name;
+			}
+			set
+			{
+				if ((this._Name != value))
+				{
+					this._Name = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Patronymic", DbType="NVarChar(60) NOT NULL", CanBeNull=false)]
+		public string Patronymic
+		{
+			get
+			{
+				return this._Patronymic;
+			}
+			set
+			{
+				if ((this._Patronymic != value))
+				{
+					this._Patronymic = value;
+				}
+			}
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.TypesHotelRoomView")]
+	public partial class TypesHotelRoomView
+	{
+		
+		private int _Id;
+		
+		private string _Name;
+		
+		private int _CountRooms;
+		
+		private int _Price;
+		
+		public TypesHotelRoomView()
+		{
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Id", AutoSync=AutoSync.Always, DbType="Int NOT NULL IDENTITY", IsDbGenerated=true)]
+		public int Id
+		{
+			get
+			{
+				return this._Id;
+			}
+			set
+			{
+				if ((this._Id != value))
+				{
+					this._Id = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Name", DbType="NVarChar(40) NOT NULL", CanBeNull=false)]
+		public string Name
+		{
+			get
+			{
+				return this._Name;
+			}
+			set
+			{
+				if ((this._Name != value))
+				{
+					this._Name = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_CountRooms", DbType="Int NOT NULL")]
+		public int CountRooms
+		{
+			get
+			{
+				return this._CountRooms;
+			}
+			set
+			{
+				if ((this._CountRooms != value))
+				{
+					this._CountRooms = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Price", DbType="Int NOT NULL")]
+		public int Price
+		{
+			get
+			{
+				return this._Price;
+			}
+			set
+			{
+				if ((this._Price != value))
+				{
+					this._Price = value;
+				}
 			}
 		}
 	}

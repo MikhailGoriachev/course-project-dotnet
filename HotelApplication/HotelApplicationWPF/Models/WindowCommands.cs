@@ -13,6 +13,9 @@ namespace HotelApplicationWPF.Models
         // команда - выхода из приложения
         public static RoutedUICommand Exit { get; set; }
 
+        // команда - заполнение таблиц данными
+        public static RoutedUICommand FillTables { get; set; }
+
         #region Команды демонстрации таблиц
 
         // команда - демонстрация таблицы График уборки
@@ -62,6 +65,9 @@ namespace HotelApplicationWPF.Models
             Exit = new RoutedUICommand("Выход", "Exit", typeof(WindowCommands), new InputGestureCollection { new KeyGesture(Key.F4, ModifierKeys.Alt, "Alt+F4") });
 
             #region Команды демонстрации таблиц
+
+            // команда - демонстрация таблицы График уборки
+            FillTables                          = new RoutedUICommand("Заполнение таблиц данными", "FillTables", typeof(WindowCommands));
 
             // команда - демонстрация таблицы График уборки
             ShowTableCleaningSchedule           = new RoutedUICommand("График уборки", "ShowTableCleaningSchedule", typeof(WindowCommands));
