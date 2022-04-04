@@ -6,51 +6,71 @@
         xmlns:local="clr-namespace:HotelApplicationWPF"
         xmlns:models="clr-namespace:HotelApplicationWPF.Models"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800"
-        Background="#210672" Foreground="White"
+        Title="Управление гостиницей" Height="450" Width="800"
+        Background="#030D23" Foreground="White"
         FontFamily="Verdana" WindowStartupLocation="CenterScreen"
+        Icon="Images\World.png"
         WindowState="Maximized">
     
     <!--#region Команды -->
     <Window.CommandBindings>
+        
         <!-- Выход -->
-        <CommandBinding Command="models:WindowCommands.Exit"                              Executed="Exit_Executed"/>
+        <CommandBinding Command="models:WindowCommands.Exit"                                Executed="Exit_Executed"/>
         
         <!-- демонстрация таблицы График уборки -->
-        <CommandBinding Command="models:WindowCommands.FillTables"                        Executed="FillTables_Executed"/>
+        <CommandBinding Command="models:WindowCommands.FillTables"                          Executed="FillTables_Executed"/>
         
         <!-- демонстрация таблицы График уборки -->
-        <CommandBinding Command="models:WindowCommands.ShowTableCleaningSchedule"         Executed="ShowTableCleaningSchedule_Executed"/>
+        <CommandBinding Command="models:WindowCommands.ShowTableCleaningSchedule"           Executed="ShowTableCleaningSchedule_Executed"/>
 
         <!-- демонстрация таблицы Дни недели -->
-        <CommandBinding Command="models:WindowCommands.ShowTableDaysOfWeek"               Executed="ShowTableDaysOfWeek_Executed"/>
+        <CommandBinding Command="models:WindowCommands.ShowTableDaysOfWeek"                 Executed="ShowTableDaysOfWeek_Executed"/>
 
         <!-- демонстрация таблицы История фактов уборки -->
-        <CommandBinding Command="models:WindowCommands.ShowTableCleaningHistory"          Executed="ShowTableCleaningHistory_Executed"/>
+        <CommandBinding Command="models:WindowCommands.ShowTableCleaningHistory"            Executed="ShowTableCleaningHistory_Executed"/>
 
         <!-- демонстрация таблицы История поселений в гостиницу -->
-        <CommandBinding Command="models:WindowCommands.ShowTableHistoryRegistrationHotel" Executed="ShowTableHistoryRegistrationHotel_Executed"/>
+        <CommandBinding Command="models:WindowCommands.ShowTableHistoryRegistrationHotel"   Executed="ShowTableHistoryRegistrationHotel_Executed"/>
 
         <!-- демонстрация таблицы Города -->
-        <CommandBinding Command="models:WindowCommands.ShowTableCities"                   Executed="ShowTableCities_Executed"/>
+        <CommandBinding Command="models:WindowCommands.ShowTableCities"                     Executed="ShowTableCities_Executed"/>
 
         <!-- демонстрация таблицы Номера гостиницы -->
-        <CommandBinding Command="models:WindowCommands.ShowTableHotelRooms"               Executed="ShowTableHotelRooms_Executed"/>
+        <CommandBinding Command="models:WindowCommands.ShowTableHotelRooms"                 Executed="ShowTableHotelRooms_Executed"/>
 
         <!-- демонстрация таблицы Типы номеров -->
-        <CommandBinding Command="models:WindowCommands.ShowTableTypesHotelRoom"           Executed="ShowTableTypesHotelRoom_Executed"/>
+        <CommandBinding Command="models:WindowCommands.ShowTableTypesHotelRoom"             Executed="ShowTableTypesHotelRoom_Executed"/>
 
         <!-- демонстрация таблицы Этажи -->
-        <CommandBinding Command="models:WindowCommands.ShowTableFloors"                   Executed="ShowTableFloors_Executed"/>
+        <CommandBinding Command="models:WindowCommands.ShowTableFloors"                     Executed="ShowTableFloors_Executed"/>
 
         <!-- демонстрация таблицы Служащие гостиницы -->
-        <CommandBinding Command="models:WindowCommands.ShowTableEmployees"                Executed="ShowTableEmployees_Executed"/>
+        <CommandBinding Command="models:WindowCommands.ShowTableEmployees"                  Executed="ShowTableEmployees_Executed"/>
 
         <!-- демонстрация таблицы Клиенты -->
-        <CommandBinding Command="models:WindowCommands.ShowTableClients"                  Executed="ShowTableClients_Executed"/>
+        <CommandBinding Command="models:WindowCommands.ShowTableClients"                    Executed="ShowTableClients_Executed"/>
 
         <!-- демонстрация таблицы Персоны -->
-        <CommandBinding Command="models:WindowCommands.ShowTablePersons"                  Executed="ShowTablePersons_Executed"/>
+        <CommandBinding Command="models:WindowCommands.ShowTablePersons"                    Executed="ShowTablePersons_Executed"/>
+
+        
+        <!--#region Комнады по заданию на 31.03.2022 -->
+
+        <!-- Добавление записи(История поселений в гостиницу) -->
+        <CommandBinding Command = "models:WindowCommands.Query1"                                Executed = "Query1_Executed" />
+
+        <!-- Редактирование записи(История поселений в гостиницу) -->
+        <CommandBinding Command = "models:WindowCommands.Query2"                                Executed = "Query2_Executed" />
+
+        <!-- Удаление записи(История поселений в гостиницу) -->
+        <CommandBinding Command = "models:WindowCommands.Query3"                                Executed = "Query3_Executed" />
+
+        <!-- Удаление записи(История поселений в гостиницу) -->
+        <CommandBinding Command = "models:WindowCommands.Query4"                                Executed = "Query4_Executed" />
+
+        <!--#endregion-->
+        
 
     </Window.CommandBindings>
     <!--#endregion Команды -->
@@ -64,12 +84,21 @@
             <RowDefinition Height="32"/>
         </Grid.RowDefinitions>
         <!--#endregion Строки-->
-        
+
         
         <!--#region Навигационные панели -->
         
         <!--#region Меню -->
-        <Menu Grid.Row="0" Background="#6021CD" Foreground="White">
+        <Menu Grid.Row="0"  Foreground="White">
+
+            <!-- Фон -->
+            <Menu.Background>
+                <LinearGradientBrush>
+                    <GradientStop Offset="0"    Color="#173D96"/>
+                    <GradientStop Offset="0.5"  Color="#6C89CB"/>
+                    <GradientStop Offset="1"    Color="#173D96"/>
+                </LinearGradientBrush>
+            </Menu.Background>
             
             <!-- Файл -->
             <MenuItem Header="Файл" Height="32">
@@ -122,6 +151,25 @@
                 <MenuItem Command="models:WindowCommands.ShowTableCleaningSchedule" Height="32" Foreground="Black"/>
 
             </MenuItem>
+
+
+            <!-- Таблицы -->
+            <MenuItem Header="Запросы">
+                
+                <!-- Добавление записи(История поселений в гостиницу) -->
+                <MenuItem Command = "models:WindowCommands.Query1"                                Height="32" Foreground="Black"/>
+
+                <!-- Редактирование записи(История поселений в гостиницу) -->
+                <MenuItem Command = "models:WindowCommands.Query2"                                Height="32" Foreground="Black"/>
+
+                <!-- Удаление записи(История поселений в гостиницу) -->
+                <MenuItem Command = "models:WindowCommands.Query3"                                Height="32" Foreground="Black"/>
+
+                <!-- Удаление записи(История поселений в гостиницу) -->
+                <MenuItem Command = "models:WindowCommands.Query4"                                Height="32" Foreground="Black"/>
+
+
+            </MenuItem>
             
             
         </Menu>
@@ -129,14 +177,39 @@
         
         
         <!--#region Панель управления -->
-        <ToolBarTray Grid.Row="1" Background="#574AB1">
-            
+        <ToolBarTray Grid.Row="1">
+
+            <!-- Фон -->
+            <ToolBarTray.Background>
+                <LinearGradientBrush>
+                    <GradientStop Offset="0"    Color="#0A1736"/>
+                    <GradientStop Offset="0.5"  Color="#173D96"/>
+                    <GradientStop Offset="1"    Color="#0A1736"/>
+                </LinearGradientBrush>
+            </ToolBarTray.Background>
+
         </ToolBarTray>
         <!--#endregion Панель управления -->
         
         <!--#region Статус-бар -->
-        <StatusBar Grid.Row="3" Background="#6021CD">
+        <StatusBar Grid.Row="3">
             
+            <!-- Фон -->
+            <StatusBar.Background>
+                <LinearGradientBrush>
+                    <GradientStop Offset="0"    Color="#072362"/>
+                    <GradientStop Offset="0.5"  Color="#293F71"/>
+                    <GradientStop Offset="1"    Color="#072362"/>
+                </LinearGradientBrush>
+            </StatusBar.Background>
+            
+            
+            <!-- Количество выбранных элементов -->
+            <Label Name="LblCount" 
+                   Content="Количество элементов: ——"
+                   Foreground="White"/>
+
+
         </StatusBar>
         <!--#endregion Статус-бар -->
         
@@ -144,22 +217,79 @@
         
         
         <!--#region Контент окна -->
-        <GroupBox Name="GbxTable" 
+        <GroupBox Name="GbxTable"
+                  Header="Данные таблиц"
                   Grid.Row="2"
                   Margin="10"
                   Padding="10">
 
-        <!-- #region Таблица для вывода данных -->
-        <DataGrid Name="DgdTableData"
-                  Background="#846FD7"
-                  RowBackground="#8462D7"
-                  AlternatingRowBackground="#BA62D7"
-                  ColumnWidth="*"
-                  FontSize="14"
-                  IsReadOnly="True">
+            <!-- #region Таблица для вывода данных -->
+            <DataGrid Name="DgdTableData"
+                      ColumnWidth="*"
+                      FontSize="14"
+                      IsReadOnly="True">
+
+                <!-- Фон DataGrid -->
+                <DataGrid.Background>
+                    <LinearGradientBrush>
+                        <GradientStop Offset="0" Color="#101729"/>
+                        <GradientStop Offset="0.5" Color="#072362"/>
+                        <GradientStop Offset="1" Color="#101729"/>
+                    </LinearGradientBrush>
+                </DataGrid.Background>
+
+
+                <!-- Фон RowBackground -->
+                <DataGrid.RowBackground>
+                    <LinearGradientBrush>
+                        <GradientStop Offset="0" Color="#4488C8"/>
+                        <GradientStop Offset="0.5" Color="#6899C8"/>
+                        <GradientStop Offset="1" Color="#4488C8"/>
+                    </LinearGradientBrush>
+                </DataGrid.RowBackground>
+
+
+                <!-- Фон AlternatingRowBackground -->
+                <DataGrid.AlternatingRowBackground>
+                    <LinearGradientBrush>
+                        <GradientStop Offset="0" Color="#4A6FCB"/>
+                        <GradientStop Offset="0.5" Color="#6C87CB"/>
+                        <GradientStop Offset="1" Color="#4A6FCB"/>
+                    </LinearGradientBrush>
+                </DataGrid.AlternatingRowBackground>
+
+
+                <!--#region Контекстное меню -->
+                <DataGrid.ContextMenu>
+                    <ContextMenu>
+
+                        <!-- Вывод таблиц через Linq to Entity по заданию на 24.03.2022 -->
+                        <!--<MenuItem Command="models:WindowCommands.ShowTableCleaningHistory"  Header="График уборки          (Linq to Entity)"         Height="32" Foreground="Black"/>
+                        <MenuItem Command="models:WindowCommands.ShowTableDaysOfWeek"       Header="Дни недели             (Linq to Entity)"            Height="32" Foreground="Black"/>
+                        <MenuItem Command="models:WindowCommands.ShowTableCleaningHistory"  Header="История фактов уборки  (Linq to Entity)" Height="32" Foreground="Black"/>-->
+
+                        <!--<Separator/>-->
+
+                        <!-- Добавление записи      (История поселений в гостиницу) --><!--
+                        <MenuItem Command="models:WindowCommands.Add" Height="32" Foreground="Black"/>
+
+                        --><!-- Редактирование записи  (История поселений в гостиницу) --><!--
+                        <MenuItem Command="models:WindowCommands.Edit" Height="32" Foreground="Black"/>
+
+                        --><!-- Удаление записи        (История поселений в гостиницу) --><!--
+                        <MenuItem Command="models:WindowCommands.Remove" Height="32" Foreground="Black"/>
+
+                        <Separator/>-->
+
+                        <!-- Выход -->
+                        <MenuItem Header="Выход" Height="32" Foreground="Black" Command="models:WindowCommands.Exit"/>
+
+                    </ContextMenu>
+                </DataGrid.ContextMenu>
+                <!--#endregion-->
             
-        </DataGrid>
-        <!--#endregion Таблица для вывода данных -->
+            </DataGrid>
+            <!--#endregion Таблица для вывода данных -->
             
         </GroupBox>
         <!--#endregion Контент окна-->

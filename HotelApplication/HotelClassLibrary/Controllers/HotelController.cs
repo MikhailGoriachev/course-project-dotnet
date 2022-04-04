@@ -1,12 +1,18 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Configuration;
+using System.Data.Entity;
+using System.Data.Entity.Core.Objects;
+using System.Data.Entity.Migrations;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 using HotelClassLibrary.Models;         // модели
 using HotelClassLibrary.Utilities;      // утилиты
+using HotelClassLibrary.Context;        // базы данных
 
 namespace HotelClassLibrary.Controllers
 {
@@ -14,75 +20,164 @@ namespace HotelClassLibrary.Controllers
     public class HotelController
     {
         // модель базы данных
-        private HotelDataContext _data;
+        private HotelDB _data;
 
-        public HotelDataContext Data
+        public HotelDB Data
         {
             get => _data;
             set => _data = value;
         }
 
+
         #region Конструкторы
 
         // конструктор по умолчанию
-        public HotelController() : this(new HotelDataContext()) { }
+        public HotelController() : this(new HotelDB()) { }
 
 
         // конструктор инициализирующий
-        public HotelController(HotelDataContext hotelDataContext)
+        public HotelController(HotelDB hotelDb)
         {
             // установка значений
-            _data = hotelDataContext;
+            _data = hotelDb;
+
+            _data.Configuration.LazyLoadingEnabled = true;
         }
 
         #endregion
 
         #region Методы
 
+        // получить статус номера - свободен или занят (занято - true) в заданную дату
+        public bool RoomIsBusy(HotelRoom room, DateTime date) => GetHistoryRegistrationHotelAsync().Result
+                            .FirstOrDefault(h => date.Date >= h.RegistrationDate.Date && date <= h.RegistrationDate.AddDays(h.Duration).Date
+                                                        && h.HotelRoom.Id == room.Id) != null;
+
+
+
+        #region Обработка по заданию на 31.03.2022
+
+        // 1.	О клиентах, проживающих в заданном номере
+        public List<Client> Proc1(int roomNum)
+        {
+            // текущая дата
+            DateTime date = DateTime.Now;
+
+            // гостичный номер
+            HotelRoom room = _data.HotelRooms.First(r => r.Number == roomNum);
+
+            // если номер свободен
+            if (room == null && RoomIsBusy(room, date))
+                return new List<Client>();
+
+
+            // выборка клиентов проживающих в заданном номере
+            return GetHistoryRegistrationHotelAsync().Result.Where(h => h.HotelRoom.Number == roomNum && date.Date >= h.RegistrationDate.Date 
+                                                                                          && date <= h.RegistrationDate.AddDays(h.Duration).Date)
+                                                            .Select(h => h.Client)
+                                                            .Distinct()
+                                                            .ToList();
+        }
+
+
+        // 2.	О клиентах, прибывших из заданного города
+        public List<Client> Proc2(string city) => GetHistoryRegistrationHotelAsync().Result.Where(h => h.City.Name == city)
+                                                                                           .Select(h => h.Client)
+                                                                                           .Distinct()
+                                                                                           .ToList();
+
+
+        // 3.	О том, кто из служащих убирал номер указанного клиента в заданный день недели
+        public List<Employee> Proc3(string passport, DateTime date)
+        {
+            // комната
+            HotelRoom room = GetHistoryRegistrationHotelAsync().Result.First(h => h.Client.Passport == passport && RoomIsBusy(h.HotelRoom, date))?.HotelRoom;
+
+            // если такой записи не существует
+            if (room == null)
+                return new List<Employee>();
+
+            // этаж комнаты
+            int floor = room.Floor.Number;
+
+            // выборка работника
+            return GetCleaningHistoryAsync().Result.Where(c => c.Floor.Number == floor && c.DateCleaning.Date == date.Date).Select(c => c.Employee).ToList();
+        }
+
+
+        // 4.	Есть ли в гостинице свободные места и свободные номера и, если есть, то сколько и какие именно номера свободны.
+        public List<HotelRoom> Proc4()
+        {
+            // текущая дата
+            DateTime date = DateTime.Now;
+
+            return GetHotelRoomsAsync().Result.Where(h => !RoomIsBusy(h, date)).ToList();
+        }
+
+
+        #endregion
+
+
         #region Получение данных из таблиц
 
+
         // получить данные из таблицы График уборки				        (CleaningSchedule)
-        public IEnumerable GetCleaningSchedule() => _data.CleaningScheduleViews;
+        public async Task<List<CleaningSchedule>> GetCleaningScheduleAsync() => await _data.CleaningSchedule.Include(c => c.Employee)
+                                                                                                       .Include(c => c.Employee.Person)
+                                                                                                       .Include(c => c.Floor)
+                                                                                                       .Include(c => c.DayOfWeek)
+                                                                                                       .ToListAsync();
 
 
         // получить данные из таблицы Дни недели					    (DaysOfWeek)
-        public IEnumerable GetDaysOfWeek() => _data.DaysOfWeekViews;
+        public async Task<List<Models.DayOfWeek>> GetDaysOfWeekAsync() => await _data.DaysOfWeek.ToListAsync();
 
 
         // получить данные из таблицы История фактов уборки		        (CleaningHistory)
-        public IEnumerable GetCleaningHistory() => _data.CleaningHistoryViews;
+        public async Task<List<CleaningHistory>> GetCleaningHistoryAsync() => await _data.CleaningHistory.Include(h => h.Employee)
+                                                                                                         .Include(c => c.Employee.Person)
+                                                                                                         .Include(h => h.Floor)
+                                                                                                         .ToListAsync();
 
 
         // получить данные из таблицы История поселений в гостиницу     (HistoryRegistrationHotel)
-        public IEnumerable GetHistoryRegistrationHotel() => _data.HistoryRegistrationHotelViews;
+        public async Task<List<HistoryRegistrationHotel>> GetHistoryRegistrationHotelAsync() => await _data.HistoryRegistrationHotel.Include(r => r.Client)
+                                                                                                                                    .Include(r => r.Client.Person)
+                                                                                                                                    .Include(r => r.City)
+                                                                                                                                    .Include(r => r.HotelRoom)
+                                                                                                                                    .Include(r => r.HotelRoom.TypeHotelRoom)
+                                                                                                                                    .Include(r => r.HotelRoom.Floor)
+                                                                                                                                    .ToListAsync();
 
 
         // получить данные из таблицы Города					        (Cities)
-        public IEnumerable GetCities() => _data.CitiesViews;
+        public async Task<List<City>> GetCitiesAsync() => await _data.Cities.ToListAsync();
 
 
         // получить данные из таблицы Номера гостиницы					(HotelRooms)
-        public IEnumerable GetHotelRooms() => _data.HotelRoomsViews;
+        public async Task<List<HotelRoom>> GetHotelRoomsAsync() => await _data.HotelRooms.Include(r => r.TypeHotelRoom)
+                                                                                         .Include(r => r.Floor)
+                                                                                         .ToListAsync();
 
 
         // получить данные из таблицы Типы номеров						(TypesHotelRoom)
-        public IEnumerable GetTypesHotelRoom() => _data.TypesHotelRoomViews;
+        public async Task<List<TypeHotelRoom>> GetTypesHotelRoomAsync() => await _data.TypesHotelRoom.ToListAsync();
 
 
         // получить данные из таблицы Этажи						        (Floors)
-        public IEnumerable GetFloors() => _data.FloorsViews;
+        public async Task<List<Floor>> GetFloorsAsync() => await _data.Floors.ToListAsync();
 
 
         // получить данные из таблицы Служащие гостиницы				(Employees)
-        public IEnumerable GetEmployees() => _data.EmployeesViews;
+        public async Task<List<Employee>> GetEmployeesAsync() => await _data.Employees.Include(e => e.Person).ToListAsync();
 
 
         // получить данные из таблицы Клиенты							(Clients)
-        public IEnumerable GetClients() => _data.ClientsViews;
+        public async Task<List<Client>> GetClientsAsync() => await _data.Clients.Include(c => c.Person).ToListAsync();
 
 
         // получить данные из таблицы Персоны							(Persons)
-        public IEnumerable GetPersons() => _data.PersonsViews;
+        public async Task<List<Person>> GetPersonsAsync() => await _data.Persons.ToListAsync();
 
 
         #endregion
@@ -91,61 +186,76 @@ namespace HotelClassLibrary.Controllers
         #region Заполнение базы данных
 
         // генерация данных и заполнение таблиц базы данных 
-        public void FillDataBase(DateTime startDate)
-        {
-            // очистка таблиц
-            ClearTables();
+        public async Task FillDataBase(DateTime startDate) =>
+            await Task.Run(() =>
+            {
+                // очистка таблиц
+                ClearTables();
 
-            // заполнение таблицы Клиенты							(Clients)
-            FillClientsTable();
+                // заполнение таблицы Клиенты							(Clients)
+                FillClientsTable(Utils.GetRand(300, 500));
 
-            // заполнение таблицы Служащие гостиницы				(Employees)
-            FillEmployeesTable();
+                // заполнение таблицы Служащие гостиницы				(Employees)
+                FillEmployeesTable(Utils.GetRand(10, 20));
 
-            // заполнение таблицы Типы номеров					    (TypesHotelRoom)
-            FillTypesHotelRoomTable();
+                // заполнение таблицы Типы номеров					    (TypesHotelRoom)
+                FillTypesHotelRoomTable();
 
-            // заполнение таблицы Этажи                             (Floors)
-            //FillFloorsTable(Utils.GetRand(3, 6));
-            FillFloorsTable(4);
+                // заполнение таблицы Этажи                             (Floors)
+                FillFloorsTable(Utils.GetRand(3, 6));
 
-            // заполнение таблицы Номера гостиницы				    (HotelRooms)
-            FillHotelRoomsTable(Utils.GetRand(10, 15), Utils.GetRand(10, 15), Utils.GetRand(10, 15), Utils.GetRand(2, 4));
+                // заполнение таблицы Номера гостиницы				    (HotelRooms)
+                FillHotelRoomsTable(Utils.GetRand(10, 20), Utils.GetRand(20, 40), Utils.GetRand(10, 40));
 
-            // заполнение таблицы Города							(Cities)
-            FillCitiesTable();
+                // заполнение таблицы Города							(Cities)
+                FillCitiesTable();
 
-            // заполнение таблицы История поселений в гостиницу	    (HistoryRegistrationHotel)
-            FillHistoryRegistrationHotelTable();
+                // заполнение таблицы История поселений в гостиницу	    (HistoryRegistrationHotel)
+                FillHistoryRegistrationHotelTable(startDate, Utils.GetRand(500, 600));
 
-            // заполнение таблицы Дни недели						(DaysOfWeek)
-            FillDaysOfWeekTable();
+                // заполнение таблицы Дни недели						(DaysOfWeek)
+                FillDaysOfWeekTable();
 
-            // заполнение таблицы График уборки					    (CleaningSchedule)
-            FillCleaningSchedule();
+                // заполнение таблицы График уборки					    (CleaningSchedule)
+                FillCleaningSchedule();
 
-            // заполнение таблицы История фактов уборки			    (CleaningHistory)
-            FillCleaningHistoryTable(startDate);
-        }
+                // заполнение таблицы История фактов уборки			    (CleaningHistory)
+                FillCleaningHistoryTable(startDate);
+            });
 
 
         // очистка таблиц
         public void ClearTables()
         {
-            // удаление данных из таблиц
-            _data.CleaningSchedules.DeleteAllOnSubmit(_data.CleaningSchedules.ToList());
-            _data.DaysOfWeeks.DeleteAllOnSubmit(_data.DaysOfWeeks.ToList());
-            _data.CleaningHistories.DeleteAllOnSubmit(_data.CleaningHistories.ToList());
-            _data.HistoryRegistrationHotels.DeleteAllOnSubmit(_data.HistoryRegistrationHotels.ToList());
-            _data.Cities.DeleteAllOnSubmit(_data.Cities.ToList());
-            _data.HotelRooms.DeleteAllOnSubmit(_data.HotelRooms.ToList());
-            _data.TypesHotelRooms.DeleteAllOnSubmit(_data.TypesHotelRooms.ToList());
-            _data.Floors.DeleteAllOnSubmit(_data.Floors.ToList());
-            _data.Employees.DeleteAllOnSubmit(_data.Employees.ToList());
-            _data.Clients.DeleteAllOnSubmit(_data.Clients.ToList());
-            _data.Persons.DeleteAllOnSubmit(_data.Persons.ToList());
+            // удаление записей
+            RemoveRangeTable(_data.CleaningSchedule);
+            RemoveRangeTable(_data.DaysOfWeek);
+            RemoveRangeTable(_data.CleaningHistory);
+            RemoveRangeTable(_data.HistoryRegistrationHotel);
+            RemoveRangeTable(_data.Cities);
+            RemoveRangeTable(_data.HotelRooms);
+            RemoveRangeTable(_data.TypesHotelRoom);
+            RemoveRangeTable(_data.Floors);
+            RemoveRangeTable(_data.Employees);
+            RemoveRangeTable(_data.Clients);
+            RemoveRangeTable(_data.Persons);
+        }
 
-            _data.SubmitChanges();
+        // удаление записей из таблицы
+        public void RemoveRangeTable<T>(DbSet<T> dbSet) where T: class 
+        {
+            // удаление данных из таблиц
+            var list = dbSet.ToList();
+
+            // установка фалага для удаления записей
+            list.ForEach(d => {
+                _data.Entry(d).State = EntityState.Deleted;
+                dbSet.Remove(d);
+            });
+
+            // удаление записей
+            dbSet.RemoveRange(list);
+            _data.SaveChanges();
         }
 
 
@@ -158,10 +268,10 @@ namespace HotelClassLibrary.Controllers
                                              .ToList();
 
             // запись в таблицу базы данных
-            _data.Persons.InsertAllOnSubmit(persons);
+            _data.Persons.AddRange(persons);
 
             // сохранение данных в БД
-            _data.SubmitChanges();
+            _data.SaveChanges();
         }
 
 
@@ -178,10 +288,10 @@ namespace HotelClassLibrary.Controllers
                                              .ToList();
 
             // добавление записей в таблицу
-            _data.Clients.InsertAllOnSubmit(clients);
+            _data.Clients.AddRange(clients);
 
             // запись в базу данных
-            _data.SubmitChanges();
+            _data.SaveChanges();
         }
 
 
@@ -192,16 +302,15 @@ namespace HotelClassLibrary.Controllers
             List<Employee> employees = Enumerable.Repeat(new Employee(), n)
                                              .Select(p => new Employee
                                              {
-                                                 Person = Utils.GetPerson(),
-                                                 WorkState = (Utils.rand.Next() & 1) == 0,
+                                                 Person = Utils.GetPerson()
                                              })
                                              .ToList();
 
             // добавление записей в таблицу
-            _data.Employees.InsertAllOnSubmit(employees);
+            _data.Employees.AddRange(employees);
 
             // запись в базу данных
-            _data.SubmitChanges();
+            _data.SaveChanges();
         }
 
 
@@ -209,10 +318,10 @@ namespace HotelClassLibrary.Controllers
         public void FillTypesHotelRoomTable()
         {
             // добавление записей в таблицу
-            _data.TypesHotelRooms.InsertAllOnSubmit(Utils.TypesHotelRoom);
+            _data.TypesHotelRoom.AddRange(Utils.TypesHotelRoom);
 
             // запись в базу данных
-            _data.SubmitChanges();
+            _data.SaveChanges();
         }
 
 
@@ -223,15 +332,15 @@ namespace HotelClassLibrary.Controllers
             int number = 1;
 
             // добавление записей в таблицу
-            _data.Floors.InsertAllOnSubmit(Enumerable.Repeat(0, countFloors).Select(f => new Floor { Number = number++ }).ToList());
+            _data.Floors.AddRange(Enumerable.Repeat(0, countFloors).Select(f => new Floor { Number = number++ }).ToList());
 
             // запись в базу данных
-            _data.SubmitChanges();
+            _data.SaveChanges();
         }
 
 
         // заполнение таблицы Номера гостиницы				    (HotelRooms)
-        public void FillHotelRoomsTable(int singleRooms, int doubleRooms, int tripleRooms, int countFloors)
+        public void FillHotelRoomsTable(int singleRooms, int doubleRooms, int tripleRooms)
         {
             // гостиничные номера
             List<HotelRoom> rooms = new List<HotelRoom>();
@@ -246,28 +355,27 @@ namespace HotelClassLibrary.Controllers
             List<Floor> floors = _data.Floors.ToList();
 
             // тип номера
-            TypesHotelRoom type;
+            TypeHotelRoom type;
 
             // генерация номеров
             for (int i = 0; i < countRooms.Length; i++)
             {
-                type = _data.TypesHotelRooms.ToList().ElementAt(i);
+                type = _data.TypesHotelRoom.ToList().ElementAt(i);
 
                 // генерация одноместных номеров
                 rooms.AddRange(Enumerable.Repeat(0, countRooms[i]).Select(h => new HotelRoom
                 {
                     Floor = floors[Utils.GetRand(0, floors.Count)],
                     Number = number++,
-                    State = (Utils.rand.Next() & 1) == 0,
-                    TypesHotelRoom = type
+                    TypeHotelRoom = type
                 }));
             }
 
             // добавление номеров в таблицу
-            _data.HotelRooms.InsertAllOnSubmit(rooms);
+            _data.HotelRooms.AddRange(rooms);
 
             // запись в базу данных
-            _data.SubmitChanges();
+            _data.SaveChanges();
         }
 
 
@@ -275,21 +383,18 @@ namespace HotelClassLibrary.Controllers
         public void FillCitiesTable()
         {
             // заполнение таблицы городов
-            _data.Cities.InsertAllOnSubmit(Utils.Cities.Select(c => new City { Name = c }));
+            _data.Cities.AddRange(Utils.Cities.Select(c => new City { Name = c }));
 
             // запись в базу данных
-            _data.SubmitChanges();
+            _data.SaveChanges();
         }
 
 
         // заполнение таблицы История поселений в гостиницу	    (HistoryRegistrationHotel)
-        public void FillHistoryRegistrationHotelTable(int n = 15)
+        public void FillHistoryRegistrationHotelTable(DateTime startDate, int n = 80)
         {
             // список клиентов в таблице клиентов
             List<Client> clients = _data.Clients.ToList();
-
-            // гостиничные номера
-            List<HotelRoom> rooms = _data.HotelRooms.ToList();
 
             // города
             List<City> cities = _data.Cities.ToList();
@@ -297,18 +402,47 @@ namespace HotelClassLibrary.Controllers
             // текущая дата
             DateTime date = DateTime.Now;
 
+            // разница в днях между текущей датой и стартовой
+            int diff = (int)(startDate - DateTime.Now).TotalDays;
+
             // генерация файтов поселения
             List<HistoryRegistrationHotel> history = Enumerable.Repeat(0, n)
                                                                .Select(h => new HistoryRegistrationHotel
                                                                {
                                                                    Client           = clients[Utils.GetRand(0, clients.Count)],
-                                                                   HotelRoom        = rooms[Utils.GetRand(0, rooms.Count)],
+                                                                   HotelRoom        = GetRoom(),
                                                                    City             = cities[Utils.GetRand(0, cities.Count)],
-                                                                   RegistrationDate = new DateTime(date.Year, date.Month, Utils.GetRand(1, date.Day)),
+                                                                   RegistrationDate = date.AddDays(Utils.GetRand(diff, 0)),
                                                                    Duration         = Utils.GetRand(1, 7)
                                                                })
                                                                .ToList();
-                                                                
+
+            // заполнение таблицы дней недели
+            _data.HistoryRegistrationHotel.AddRange(history);
+
+            // запись в базу данных
+            _data.SaveChanges();
+        }
+
+
+        // получить свободную комнату
+        private HotelRoom GetRoom()
+        {
+            // комнаты
+            List<HotelRoom> list = _data.HotelRooms.ToList();
+
+            // текущая дата
+            DateTime date = DateTime.Now;
+
+            // комната
+            HotelRoom room;
+
+            do
+            {
+                room = list[Utils.GetRand(0, list.Count)];
+            } while (RoomIsBusy(room, date));
+
+            return room;
         }
 
 
@@ -319,10 +453,10 @@ namespace HotelClassLibrary.Controllers
             int number = 1;
 
             // заполнение таблицы дней недели
-            _data.DaysOfWeeks.InsertAllOnSubmit(Utils.DaysOfWeek.Select(c => new DaysOfWeek { Name = c, Number = number++ }));
+            _data.DaysOfWeek.AddRange(Utils.DaysOfWeek.Select(c => new Models.DayOfWeek { Name = c, Number = number++ }));
 
             // запись в базу данных
-            _data.SubmitChanges();
+            _data.SaveChanges();
         }
 
 
@@ -330,10 +464,10 @@ namespace HotelClassLibrary.Controllers
         public void FillCleaningSchedule()
         {
             // дни недели
-            List<DaysOfWeek> days = _data.DaysOfWeeks.ToList();
+            List<Models.DayOfWeek> days = _data.DaysOfWeek.ToList();
 
             // график уборки
-            List<CleaningSchedule> cleanings = _data.CleaningSchedules.ToList();
+            List<CleaningSchedule> cleanings = _data.CleaningSchedule.ToList();
 
             // этажи
             List<Floor> floors = _data.Floors.ToList();
@@ -346,16 +480,16 @@ namespace HotelClassLibrary.Controllers
                 cleanings.AddRange(Enumerable.Repeat(0, _data.Floors.Count())
                                              .Select(f => new CleaningSchedule
                                              {
-                                                 DaysOfWeek = days[i],
+                                                 DayOfWeek = days[i],
                                                  Floor = floors[k++],
                                                  Employee = employees[Utils.GetRand(0, employees.Count)]
                                              }));
 
             // заполнение таблицы графика уборки
-            _data.CleaningSchedules.InsertAllOnSubmit(cleanings);
+            _data.CleaningSchedule.AddRange(cleanings);
 
             // запись в базу данных
-            _data.SubmitChanges();
+            _data.SaveChanges();
         }
 
 
@@ -363,7 +497,7 @@ namespace HotelClassLibrary.Controllers
         public void FillCleaningHistoryTable(DateTime startDate)
         {
             // список графика уборки
-            List<CleaningSchedule> schedules = _data.CleaningSchedules.ToList();
+            List<CleaningSchedule> schedules = _data.CleaningSchedule.ToList();
 
             // список фактов уборки
             List<CleaningHistory> history = new List<CleaningHistory>();
@@ -372,7 +506,7 @@ namespace HotelClassLibrary.Controllers
             while (startDate <= DateTime.Now)
             {
                 // выбрать записи из графика по дню недели м добавить записи по уборке
-                schedules.Where(c => startDate.DayOfWeek == (DayOfWeek)c.DaysOfWeek.Number - 1)
+                schedules.Where(c => startDate.DayOfWeek == (System.DayOfWeek)c.DayOfWeek.Number - 1)
                          .ToList()
                          .ForEach(c => history.Add(new CleaningHistory { Floor = c.Floor, DateCleaning = startDate, Employee = c.Employee }));
 
@@ -381,10 +515,10 @@ namespace HotelClassLibrary.Controllers
             }
 
             // заполнение таблицы истрии фактов уборки
-            _data.CleaningHistories.InsertAllOnSubmit(history);
+            _data.CleaningHistory.AddRange(history);
 
             // запись в базу данных
-            _data.SubmitChanges();
+            _data.SaveChanges();
         }
 
         #endregion

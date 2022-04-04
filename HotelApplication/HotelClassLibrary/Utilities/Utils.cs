@@ -176,10 +176,10 @@ namespace HotelClassLibrary.Utilities
 
 
         // типы номеров
-        public static TypesHotelRoom[] TypesHotelRoom = new[] { 
-            new TypesHotelRoom { Name = "Одноместный", CountRooms = 1, Price = 3_500 },
-            new TypesHotelRoom { Name = "Двухместный", CountRooms = 2, Price = 4_300 }, 
-            new TypesHotelRoom { Name = "Трехместный", CountRooms = 3, Price = 5_500 }
+        public static TypeHotelRoom[] TypesHotelRoom = new[] { 
+            new TypeHotelRoom { Name = "Одноместный", CountRooms = 1, Price = 3_500 },
+            new TypeHotelRoom { Name = "Двухместный", CountRooms = 2, Price = 4_300 }, 
+            new TypeHotelRoom { Name = "Трехместный", CountRooms = 3, Price = 5_500 }
         };
 
 

@@ -34,5 +34,16 @@ namespace HotelClassLibrary.Properties {
                 return ((string)(this["HotelConnectionString"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=DESKTOP-7AJGFCI\\SQLEXPRESS;Initial Catalog=Hotel;Integrated Security=" +
+            "True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False")]
+        public string HotelConnectionString1 {
+            get {
+                return ((string)(this["HotelConnectionString1"]));
+            }
+        }
     }
 }
