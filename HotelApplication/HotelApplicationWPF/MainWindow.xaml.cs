@@ -58,6 +58,7 @@ namespace HotelApplicationWPF
 
         #endregion
 
+
         #region Команды
 
         // выход из приложения
@@ -100,8 +101,11 @@ namespace HotelApplicationWPF
                 // список занятых комнат
                 List<HotelRoom> rooms = _controller.GetHotelRoomsAsync().Result.Where(h => _controller.RoomIsBusy(h, date)).ToList();
 
-                // номер комнаты
-                int number = rooms[Utils.GetRand(1, rooms.Count)].Number;
+                int number = 0;
+
+                if (rooms.Count > 0)   
+                    // номер комнаты
+                    number = rooms[Utils.GetRand(1, rooms.Count)].Number;
 
                 // заполнение DataGrid
                 UpdateBinding(DgdTableData, _controller.Proc1(number)
@@ -205,10 +209,11 @@ namespace HotelApplicationWPF
                                                        .Select(r => new {
                                                            r.Id,
                                                            TypeRoom = r.TypeHotelRoom.Name,
-                                                           r.TypeHotelRoom.CountRooms,
+                                                           r.TypeHotelRoom.CountPlace,
                                                            r.TypeHotelRoom.Price,
                                                            Floor = r.Floor.Number,
                                                            RoomNubmer = r.Number,
+                                                           r.PhoneNumber,
                                                            IsBusy = _controller.RoomIsBusy(r, date)
                                                        })
                                                        .ToList());
@@ -246,7 +251,10 @@ namespace HotelApplicationWPF
                                                        }));
 
                 // вывод наименование таблицы
-                UpdateGroupBox(GbxTable, $"График уборки");
+                //UpdateGroupBox(GbxTable, $"График уборки");
+
+                Report report = _controller.GetReport(DateTime.Now.AddDays(-356), DateTime.Now);
+                UpdateGroupBox(GbxTable, $"График уборки | Количество клиентов: {report.CountClients}; Сумма: {report.Account}");
             });
 
 
@@ -368,10 +376,11 @@ namespace HotelApplicationWPF
                                                        {
                                                            r.Id,
                                                            TypeRoom = r.TypeHotelRoom.Name,
-                                                           r.TypeHotelRoom.CountRooms,
+                                                           r.TypeHotelRoom.CountPlace,
                                                            r.TypeHotelRoom.Price,
                                                            Floor = r.Floor.Number,
                                                            RoomNubmer = r.Number,
+                                                           r.PhoneNumber,
                                                            IsBusy = _controller.RoomIsBusy(r, date)
                                                        })
                                                        .ToList());
@@ -495,7 +504,6 @@ namespace HotelApplicationWPF
 
 
         #region Методы
-
 
         #region Общие методы
 

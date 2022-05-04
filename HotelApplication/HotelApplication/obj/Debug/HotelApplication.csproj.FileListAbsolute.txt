@@ -1,0 +1,16 @@
+D:\01. Programming\00. Курсовые проекты\01. Курсовой проект .NET Framework\HotelApplication\HotelApplication\bin\Debug\HotelApplication.exe.config
+D:\01. Programming\00. Курсовые проекты\01. Курсовой проект .NET Framework\HotelApplication\HotelApplication\bin\Debug\HotelApplication.exe
+D:\01. Programming\00. Курсовые проекты\01. Курсовой проект .NET Framework\HotelApplication\HotelApplication\bin\Debug\HotelApplication.pdb
+D:\01. Programming\00. Курсовые проекты\01. Курсовой проект .NET Framework\HotelApplication\HotelApplication\obj\Debug\HotelApplication.csproj.AssemblyReference.cache
+D:\01. Programming\00. Курсовые проекты\01. Курсовой проект .NET Framework\HotelApplication\HotelApplication\obj\Debug\HotelApplication.csproj.SuggestedBindingRedirects.cache
+D:\01. Programming\00. Курсовые проекты\01. Курсовой проект .NET Framework\HotelApplication\HotelApplication\obj\Debug\MainWindow.g.cs
+D:\01. Programming\00. Курсовые проекты\01. Курсовой проект .NET Framework\HotelApplication\HotelApplication\obj\Debug\App.g.cs
+D:\01. Programming\00. Курсовые проекты\01. Курсовой проект .NET Framework\HotelApplication\HotelApplication\obj\Debug\HotelApplication_MarkupCompile.cache
+D:\01. Programming\00. Курсовые проекты\01. Курсовой проект .NET Framework\HotelApplication\HotelApplication\obj\Debug\HotelApplication_MarkupCompile.lref
+D:\01. Programming\00. Курсовые проекты\01. Курсовой проект .NET Framework\HotelApplication\HotelApplication\obj\Debug\MainWindow.baml
+D:\01. Programming\00. Курсовые проекты\01. Курсовой проект .NET Framework\HotelApplication\HotelApplication\obj\Debug\HotelApplication.g.resources
+D:\01. Programming\00. Курсовые проекты\01. Курсовой проект .NET Framework\HotelApplication\HotelApplication\obj\Debug\HotelApplication.Properties.Resources.resources
+D:\01. Programming\00. Курсовые проекты\01. Курсовой проект .NET Framework\HotelApplication\HotelApplication\obj\Debug\HotelApplication.csproj.GenerateResource.cache
+D:\01. Programming\00. Курсовые проекты\01. Курсовой проект .NET Framework\HotelApplication\HotelApplication\obj\Debug\HotelApplication.csproj.CoreCompileInputs.cache
+D:\01. Programming\00. Курсовые проекты\01. Курсовой проект .NET Framework\HotelApplication\HotelApplication\obj\Debug\HotelApplication.exe
+D:\01. Programming\00. Курсовые проекты\01. Курсовой проект .NET Framework\HotelApplication\HotelApplication\obj\Debug\HotelApplication.pdb

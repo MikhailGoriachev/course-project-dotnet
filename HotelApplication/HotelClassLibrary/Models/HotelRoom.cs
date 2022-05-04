@@ -29,9 +29,13 @@ namespace HotelClassLibrary.Models
         public int Number { get; set; }
 
 
+        // номер телефона
+        [Required]
+        public string PhoneNumber { get; set; }
+
+
         // статус удаления
         [Required]
         public bool IsDeleted { get; set; }
-
     }
 }

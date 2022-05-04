@@ -64,7 +64,7 @@ go
 create table TypesHotelRoom (
 	Id			int					not null	primary key identity,
 	[Name]		nvarchar(40)		not null,	-- Название типа
-	CountRooms	int					not null,	-- Количество комнат
+	CountPlace	int					not null,	-- Количество мест
 	Price		int					not null,	-- Стоимость в сутки
 	IsDeleted	bit					not null	-- Статус удаления
 );
@@ -82,11 +82,12 @@ go
 
 -- создание таблицы Номера гостиницы				(HotelRooms)
 create table HotelRooms (
-	Id					int			not null	primary key identity,
-	IdTypeHotelRoom		int			not null	foreign key references TypesHotelRoom(Id),		-- Тип номера
-	IdFloor				int			not null	foreign key references Floors(Id),				-- Этаж	
-	Number				int			not null,	-- Номер гостиничного номера
-	IsDeleted			bit			not null	-- Статус удаления
+	Id					int				not null	primary key identity,
+	IdTypeHotelRoom		int				not null	foreign key references TypesHotelRoom(Id),		-- Тип номера
+	IdFloor				int				not null	foreign key references Floors(Id),				-- Этаж	
+	Number				int				not null,	-- Номер гостиничного номера
+	PhoneNumber			nvarchar(20)	not null,	-- Номер телефона
+	IsDeleted			bit				not null	-- Статус удаления
 );
 go
 

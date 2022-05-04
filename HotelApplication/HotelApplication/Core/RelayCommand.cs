@@ -4,11 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HotelClassLibrary.Models
+namespace HotelApplication.Core
 {
-    // Класс Расширяющие методы
-    public class ExtendedMethods
+    internal class RelayCommand
     {
-        // 
     }
 }

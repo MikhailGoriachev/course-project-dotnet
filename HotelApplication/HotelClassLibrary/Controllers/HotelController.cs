@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
+using System.Data.Entity.SqlServer;
 using System.Data.Entity.Core.Objects;
 using System.Data.Entity.Migrations;
 using System.Data.SqlClient;
@@ -54,8 +56,300 @@ namespace HotelClassLibrary.Controllers
                                                         && h.HotelRoom.Id == room.Id) != null;
 
 
+        // получить количество занятых мест номера - в заданную дату
+        public int CountBusyPlace(HotelRoom room, DateTime date) => GetHistoryRegistrationHotelAsync().Result
+                            .Where(h => date.Date >= h.RegistrationDate.Date && date <= h.RegistrationDate.AddDays(h.Duration).Date 
+                                    && h.HotelRoom.Id == room.Id)
+                            .Count();
 
-        #region Обработка по заданию на 31.03.2022
+
+        // операция над записью таблицы
+        public void ChangeEntity(DbEntityEntry entity, EntityState state, DbSet dbSet)
+        {
+            // установка состояния
+            _data.Entry(entity).State = state;
+
+            // исполнение функции
+            switch (state)
+            {
+                case EntityState.Added:
+                    dbSet.Add(entity);
+                    break;
+                case EntityState.Deleted:
+                    dbSet.Remove(entity);
+                    break;
+                default:
+                    break;
+            }
+
+            // сохранение в базе данных
+            _data.SaveChanges();
+        }
+
+
+
+
+        #region Функции администратора
+
+        /*
+         * Администратор должен иметь возможность выполнить следующие операции:
+         *  •	принять на работу или уволить служащего гостиницы
+         *  •	изменить расписание работы служащего
+         *  •	поселить или выселить клиента.
+        */
+
+        // принять на работу или уволить служащего гостиницы
+        public void AddEmployee(Employee employee)
+        {
+            // добавить служащего
+            _data.Employees.AddOrUpdate(employee);
+
+            // сохранить в базу данных
+            _data.SaveChanges();
+
+            // корректировка графика уборки
+            CorrectCleaningSchedule();
+        }
+
+
+        // изменить расписание работы служащего
+
+
+        // поселить или выселить клиента
+
+        #endregion
+
+
+
+        #region Операции администратора
+
+        // Администратор должен иметь возможность выполнить следующие операции:
+        // •	принять на работу или уволить служащего гостиницы
+        // •	изменить расписание работы служащего
+        // •	поселить или выселить клиента.
+        // •	автоматической выдачи клиенту счета за проживание в гостинице.
+        // •	отчета о работе гостиницы за указанный квартал текущего года. Такой отчет должен 
+        //      содержать следующие сведения: число клиентов за указанный период, сколько дней был занят 
+        //      и свободен каждый из номеров гостиницы, общая сумма дохода.
+
+
+        // принять на работу или уволить служащего гостиницы
+        public async Task AddEmployeeAsync(Employee employee) =>
+            await Task.Run(() =>
+            {
+                // добавить служащего
+                _data.Employees.Add(employee);
+
+                // установка статуса добавления
+                _data.Entry(employee).State = EntityState.Added;
+
+                // асинхронное добавление
+                _data.SaveChanges();
+
+                // корректировка графика уборки
+                CorrectCleaningSchedule();
+            });
+
+
+        #region Изменить расписание уборки
+
+        // изменить расписание уборки
+        // параметры: addDays - новые дни работы, deleteDays - удаляемые дни работы
+        public void ChangeSchedule(List<CleaningSchedule> addDays, List<CleaningSchedule> deleteDays)
+        {
+            // добавление записей
+            addDays.ForEach(d => _data.Entry(d).State = EntityState.Added);
+            _data.CleaningSchedule.AddRange(addDays);
+            _data.SaveChanges();
+
+            // удаление записей
+            deleteDays.ForEach(d => _data.Entry(deleteDays).State = EntityState.Deleted);
+            _data.CleaningSchedule.RemoveRange(deleteDays);
+            _data.SaveChanges();
+
+            // корректировка графика уборки
+            CorrectCleaningSchedule();
+        }
+
+
+        // корректировка графика уборки
+        public void CorrectCleaningSchedule()
+        {
+            // список полученных записей
+            List<CleaningSchedule> list = new List<CleaningSchedule>();
+
+            // цикл перебора дней недели
+            foreach (var day in _data.DaysOfWeek)
+            {
+                // цикл перебора этажей
+                foreach (var floor in _data.Floors)
+                {
+                    // поиск записей для этого этажа и дня недели
+                    list = _data.CleaningSchedule.Where(c => c.DayOfWeek == day && c.Floor == floor)
+                                                 .ToList();
+                    
+                    // если список пуст - установить работника на этот день, 
+                    // у которго меньше всего рабочих дней
+                    if (list.Count == 0)
+                    {
+                        CleaningSchedule c = new CleaningSchedule{
+                            Employee = GetMinEmployee(),
+                            DayOfWeek = day,
+                            Floor = floor
+                        };
+
+                        _data.Entry(c).State = EntityState.Added;
+                        _data.CleaningSchedule.Add(c);
+                    }
+                        
+                    // найдено записей больше 1, то все записи кроме последней
+                    if (list.Count > 1)
+                    {
+                        // удаление первой записи из списка
+                        list.Remove(list[0]);
+
+                        // удаление оставшихся записей из базы данных
+                        list.ForEach(c => _data.Entry(c).State = EntityState.Deleted);
+                        _data.CleaningSchedule.RemoveRange(list);
+                    }
+                }
+            }
+
+            // сохранение в базу данных
+            _data.SaveChanges();
+        }
+
+
+        // получить работника, у которого меньше всего рабочих дней
+        public Employee GetMinEmployee() 
+        {
+            // получить коллекцию работников с количеством смен
+            var em = _data.Employees.Where(e => e.IsDeleted == false)
+                            .Select(e => new {Employee = e, Count =_data.CleaningSchedule.Count(c => c.Employee.Id == e.Id)})
+                            .ToList();
+
+            // минимальное значение количества смен
+            int min = em.Min(e => e.Count);
+
+            return em.First(e => e.Count == min).Employee;
+        }
+
+        #endregion
+
+
+        // разместить клиента
+        public bool PlaceClient(Client client, HotelRoom room, City city, int Duration)
+        {
+            // если номер заполнен
+            if(CountBusyPlace(room, DateTime.Now) == room.TypeHotelRoom.CountPlace)
+                return false;
+
+            // запись регистрации
+            HistoryRegistrationHotel registration = new HistoryRegistrationHotel{
+                                                            Client = client,
+                                                            HotelRoom = room,
+                                                            Duration = Duration,
+                                                            City = city
+                                                        };
+
+            // установить статус
+            _data.Entry(registration).State = EntityState.Added;
+
+            // добавить в коллекцию
+            _data.HistoryRegistrationHotel.Add(registration);
+
+            // сохранить изменения в базе данных
+            _data.SaveChanges();
+
+            return true;
+        }
+
+
+        // выселить клиента 
+        // параметр room - для того, чтоб выселить клиента из конкретного номера, так как 
+        // один клиент может жить в нескольких номерах, по умолчанию null
+        public bool EvictClient(Client client, HotelRoom room = null)
+        {
+            // текущая дата
+            DateTime now = DateTime.Now.Date;
+
+            // записи о регистрации клиента по текущей дате
+            List<HistoryRegistrationHotel> list = _data.HistoryRegistrationHotel.ToList()
+                                                    .Where(h => h.Client == client 
+                                                            && now >= h.RegistrationDate.Date
+                                                            && now <= h.RegistrationDate.AddDays(h.Duration).Date)
+                                                    .ToList();
+
+            // текущая дата в днях
+            int nowDays = now.TimeOfDay.Days;
+
+            // если требуется выселить из определенного номера,
+            // то урезать количество дней проживания по текущую дату
+            if (room != null)
+            {
+                // поиск записи по номеру проживания
+                HistoryRegistrationHotel elem = list.First(h => h.HotelRoom.Id == room.Id);
+                
+                // если записей по указанному номеру не найдено
+                if (elem == null)
+                    return false;
+
+                // урезание количества дней проживания по текущей дате
+                elem.Duration = nowDays - elem.RegistrationDate.Date.TimeOfDay.Days;
+
+                return true;
+            }
+
+
+            // выселить из всех номеров выбранного клиента
+            list.ForEach(e => e.Duration = nowDays - e.RegistrationDate.Date.TimeOfDay.Days);
+
+            return true;
+        }
+
+
+        #endregion
+
+
+        #region Отчёт
+
+        /*
+         *  Необходимо предусмотреть также возможность автоматической выдачи клиенту 
+         *  счета за проживание в гостинице и получения отчета о работе гостиницы за 
+         *  указанный квартал текущего года. 
+         *  
+         *  Такой отчет должен содержать следующие сведения: число клиентов за указанный 
+         *  период, сколько дней был занят и свободен каждый из номеров гостиницы, общая 
+         *  сумма дохода.
+        */
+
+
+        // получение счёта за проживание клиента
+        public int GetAccount(Client client, HotelRoom room = null, DateTime dateStart = new DateTime())
+        {
+            // поиск записей регистрации по данному колиенту и дате
+            List<HistoryRegistrationHotel> histories = GetHistoryRegistrationHotelAsync().Result;
+
+            // если текущая дата равна нулевой дате, то получить последнюю запись клиента
+            HistoryRegistrationHotel elem = dateStart.Year == 0 
+                                                            ? histories.FirstOrDefault(h => h.Client == client && h.RegistrationDate.Date == dateStart.Date 
+                                                                                                               && h.HotelRoom.Id == (room ?? h.HotelRoom).Id)
+                                                            : histories.FirstOrDefault(h => h.Client == client && h.HotelRoom.Id == (room ?? h.HotelRoom).Id
+                                                                                                               && h.HotelRoom.Id == (room ?? h.HotelRoom).Id);
+
+            // получение стоимости
+            return elem.Duration * elem.HotelRoom.TypeHotelRoom.Price;
+        }
+
+
+        // получение отчёта за указанный квартал
+        public Report GetReport(DateTime begin, DateTime end) => 
+            new Report(GetHotelRoomsAsync().Result, GetHistoryRegistrationHotelAsync().Result, begin, end);
+
+
+        #endregion
+
+        #region Запросы
 
         // 1.	О клиентах, проживающих в заданном номере
         public List<Client> Proc1(int roomNum)
@@ -64,7 +358,7 @@ namespace HotelClassLibrary.Controllers
             DateTime date = DateTime.Now;
 
             // гостичный номер
-            HotelRoom room = _data.HotelRooms.First(r => r.Number == roomNum);
+            HotelRoom room = _data.HotelRooms.FirstOrDefault(r => r.Number == roomNum);
 
             // если номер свободен
             if (room == null && RoomIsBusy(room, date))
@@ -366,8 +660,9 @@ namespace HotelClassLibrary.Controllers
                 rooms.AddRange(Enumerable.Repeat(0, countRooms[i]).Select(h => new HotelRoom
                 {
                     Floor = floors[Utils.GetRand(0, floors.Count)],
-                    Number = number++,
-                    TypeHotelRoom = type
+                    Number = number,
+                    TypeHotelRoom = type,
+                    PhoneNumber = (80000 + number++).ToString()
                 }));
             }
 

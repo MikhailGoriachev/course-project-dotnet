@@ -21,9 +21,9 @@ namespace HotelClassLibrary.Models
         public string Name { get; set; }
 
 
-        // количество комнат
+        // количество мест
         [Required]
-        public int CountRooms { get; set; }
+        public int CountPlace { get; set; }
 
 
         // стоимость в сутки
