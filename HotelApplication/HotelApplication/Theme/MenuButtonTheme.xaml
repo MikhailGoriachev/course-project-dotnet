@@ -1,0 +1,71 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Style BasedOn="{StaticResource {x:Type ToggleButton}}"
+           TargetType="{x:Type RadioButton}"
+           x:Key="MenuButtonTheme">
+
+        <!--#region Сеттеры -->
+        <Style.Setters>
+            
+            <!-- Шаблон элемента -->
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Grid VerticalAlignment="Stretch"
+                              HorizontalAlignment="Stretch"
+                              Background="{TemplateBinding Background}">
+
+                            <!-- Надпись -->
+                            <TextBlock Text="{TemplateBinding Property=Content}"
+                                       VerticalAlignment="Center"
+                                       Margin="30 0 0 0"/>
+
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+
+            <!-- Фон -->
+            <Setter Property="Background" Value="Transparent"/>
+            
+            <!-- Граница -->
+            <Setter Property="BorderThickness" Value="0"/>
+            
+            <!-- Высота -->
+            <Setter Property="Height" Value="50"/>
+            
+            <!-- Цвет текста -->
+            <Setter Property="Foreground" Value="White"/>
+
+            <!-- Размер текста -->
+            <Setter Property="FontSize" Value="14"/>
+
+            <!-- Курсор -->
+            <Setter Property="Cursor" Value="Hand"/>
+
+        </Style.Setters>
+        <!--#endregion-->
+        
+        <!--#region Триггеры -->
+        <Style.Triggers>
+            
+            <!-- Элемент выбран -->
+            <Trigger Property="IsChecked" Value="True">
+                
+                <!-- Фон -->
+                <Setter Property="Background" Value="#22202f"/>
+                
+            </Trigger>
+            
+            <!-- Элемент выбран -->
+            <Trigger Property="IsMouseOver" Value="True">
+                
+                <!-- Фон -->
+                <Setter Property="Background" Value="#383645"/>
+                
+            </Trigger>
+        </Style.Triggers>
+        <!--#endregion-->
+
+    </Style>
+</ResourceDictionary>

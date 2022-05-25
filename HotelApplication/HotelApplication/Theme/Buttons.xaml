@@ -1,0 +1,36 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Кнопка управления на верхней панели -->
+    <ControlTemplate x:Key="ButtonControlTransparent" TargetType="Button">
+
+        <Border Cursor="Hand"
+                Background="Transparent"
+                Width="30"
+                Height="30">
+            <ContentControl Content="{TemplateBinding Property=Content}"
+                            Width="15"/>
+        </Border>
+    </ControlTemplate>
+
+    <!-- Стиль Button -->
+    <Style TargetType="Button">
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Height" Value="40"/>
+        <Setter Property="Width" Value="160"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border CornerRadius="20"
+                                Background="{TemplateBinding Background}">
+
+                        <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+
+</ResourceDictionary>

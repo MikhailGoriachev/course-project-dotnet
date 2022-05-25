@@ -1,0 +1,126 @@
+﻿<Window x:Class="HotelApplication.MVVM.View.ClientWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:HotelApplication.MVVM.View"
+        xmlns:model="clr-namespace:HotelClassLibrary.Models;assembly=HotelClassLibrary"
+        mc:Ignorable="d"
+        xmlns:conv="clr-namespace:HotelApplication.Converters"
+        Title="ClientWindow" Height="500" Width="400"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        Foreground="White"
+        FontSize="12">
+
+    <!-- DataContext -->
+    <Window.DataContext>
+        <model:Client/>
+    </Window.DataContext>
+
+    
+    <!-- Ресурсы окна -->
+    <Window.Resources>
+
+        <!-- Конвертер, который возвращает обратное значение bool -->
+        <conv:BackBoolConverter x:Key="BackBoolConverter"/>
+
+        <!-- Стиль Label -->
+        <Style TargetType="Label">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Margin" Value="0"/>
+        </Style>
+
+        <!-- Стиль TextBox -->
+        <Style TargetType="TextBox">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Height" Value="25"/>
+            <Setter Property="Margin" Value="0 0 0 20"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="5 0 0 0"/>
+        </Style>
+
+    </Window.Resources>
+
+    <!-- Контент окна -->
+    <Border Background="#302E44"
+            CornerRadius="20">
+        <Grid>
+            <!-- Столбцы -->
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Строки -->
+            <Grid.RowDefinitions>
+                <RowDefinition Height="75"/>
+                <RowDefinition/>
+                <RowDefinition Height="80"/>
+            </Grid.RowDefinitions>
+
+            <!-- Прямоугольник для перетаскивания окна -->
+            <Rectangle Fill="Transparent"
+                           Grid.ColumnSpan="2"/>
+
+            <!-- Заголовок окна -->
+            <Label Name="LblHeader" Content="Добавление клиента"
+                   FontSize="20"
+                   Margin="20"
+                   Grid.ColumnSpan="2"
+                   HorizontalAlignment="Center"/>
+
+            <!-- Поля -->
+            <StackPanel Grid.Row="1" Margin="20">
+
+                <!-- Фамилия -->
+                <StackPanel Orientation="Vertical">
+                    <Label Content="Фамилия:"/>
+                    <TextBox Text="{Binding Person.Surname}"/>
+                </StackPanel>
+
+                <!-- Имя -->
+                <StackPanel Orientation="Vertical">
+                    <Label Content="Имя:"/>
+                    <TextBox Text="{Binding Person.Name}"/>
+                </StackPanel>
+
+                <!-- Отчество -->
+                <StackPanel Orientation="Vertical">
+                    <Label Content="Отчество:"/>
+                    <TextBox Text="{Binding Person.Patronymic}"/>
+                </StackPanel>
+
+                <!-- Паспорт -->
+                <StackPanel Orientation="Vertical">
+                    <Label Content="Паспорт:"/>
+                    <TextBox Text="{Binding Passport}"/>
+                </StackPanel>
+
+            </StackPanel>
+
+
+            <!-- Кнопки управления -->
+            <StackPanel Grid.Row="2" Orientation="Horizontal">
+
+                <!-- Кнопка ОК -->
+                <Button Name="BtnOK" Content="Добавить"
+                        Background="#4EFF91"
+                        Click="Button_Click"
+                        Margin="20"/>
+
+                <!-- Кнопка Отмена -->
+                <Button Content="Отмена"
+                        Background="#844EFF"
+                        IsCancel="True"
+                        Margin="20"/>
+
+            </StackPanel>
+
+        </Grid>
+    </Border>
+</Window>

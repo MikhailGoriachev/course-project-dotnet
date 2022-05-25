@@ -1,0 +1,137 @@
+﻿<UserControl x:Class="HotelApplication.MVVM.View.RoomsManagementView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:HotelApplication.MVVM.View"
+             xmlns:conv="clr-namespace:HotelApplication.Converters"
+             xmlns:model="clr-namespace:HotelApplication.MVVM.ViewModel"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800"
+             Name="ControlUser">
+
+    <!-- DataContext -->
+    <UserControl.DataContext>
+        <model:RoomsManagementViewModel/>
+    </UserControl.DataContext>
+
+    <!-- Ресурсы -->
+    <UserControl.Resources>
+
+        <!-- Конвертер, который отнимает число от значения -->
+        <conv:DoubleSubtractionConverter x:Key="DoubleSubtractionConverter"/>
+
+        <!-- конвертер возвращает строковое мест (занято/всего) комнаты -->
+        <conv:HotelRoomPlaceToString x:Key="HotelRoomPlaceToString"/>
+
+    </UserControl.Resources>
+
+
+    <!--#region Контент страницы -->
+    <StackPanel>
+
+        <!-- Заголовок -->
+        <TextBlock Text="Управление номерами"
+                       Foreground="White"
+                       FontSize="28"
+                       HorizontalAlignment="Left"
+                       Margin="0 0 0 20"/>
+
+        <!--#region Инфрмационный блок -->
+        <StackPanel Orientation="Horizontal">
+            <Border Width="250"
+                    Height="50"
+                    CornerRadius="10">
+
+                <!--#region Фон -->
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0 0" EndPoint="1 2">
+                        <GradientStop Color="#5bc3ff" Offset="0"/>
+                        <GradientStop Color="#3aa0ff" Offset="1.1"/>
+                    </LinearGradientBrush>
+                </Border.Background>
+                <!--#endregion-->
+
+                <!--#region Контент -->
+                <StackPanel Orientation="Horizontal" 
+                                VerticalAlignment="Center"
+                                Margin="20 0">
+
+                    <TextBlock Text="Всего номеров: "
+                               Foreground="White"
+                               FontSize="18"/>
+
+                    <TextBlock Text="{Binding CountRooms}"
+                                       Foreground="White"
+                                       FontSize="18"/>
+                </StackPanel>
+                <!--#endregion-->
+            </Border>
+
+            <!-- Добавить клиента в номер -->
+            <Button Content="Добавить клиента" Width="150"
+                        Command="{Binding AddClientRoomCommand}"
+                        Margin="20 0 10 0"
+                        Background="#4EFF91"/>
+
+            <!-- Выселить клиента из номера -->
+            <Button Content="Выселить клиента" Width="150"
+                        Command="{Binding EvictClientRoomCommand}"
+                        Margin="10 0"
+                        Background="#ECFF4E"/>
+
+            <!-- Информация об уборке -->
+            <Button Content="Информация об уборке" Width="150"
+                        Command="{Binding CleaningRoomInfoCommand}"
+                        Margin="10 0"
+                        Background="#ECFF4E"/>
+
+        </StackPanel>
+        <!--#endregion-->
+
+        <!--#region Таблица с данными рабочих -->
+        <DataGrid Margin="0 20" ItemsSource="{Binding Rooms}"
+                  AutoGenerateColumns="False"
+                  AlternationCount="2"
+                  Height="{Binding ElementName=ControlUser, Path=ActualHeight, Converter={StaticResource DoubleSubtractionConverter}, ConverterParameter=150}"
+                  RowHeaderWidth="0"
+                  IsReadOnly="True"
+                  HorizontalAlignment="Left"
+                  SelectionMode="Single"
+                  Background="Transparent"
+                  SelectedItem="{Binding SelectedRoom, Mode=TwoWay}"
+                  CanUserSortColumns="False">
+
+            <!--#region Заголовки таблицы-->
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Этаж" Binding="{Binding Floor.Number}" Width="20*"/>
+                <DataGridTextColumn Header="Номер комнаты" Binding="{Binding Number}" Width="20*"/>
+                <DataGridTextColumn Header="Тип номера" Binding="{Binding TypeHotelRoom.Name}" Width="20*"/>
+                <DataGridTextColumn Header="Места (занято/всего)" Binding="{Binding Id, Converter={StaticResource HotelRoomPlaceToString}}" Width="20*"/>
+                <DataGridTextColumn Header="Стоимость (сутки)" Binding="{Binding TypeHotelRoom.Price}" Width="20*"/>
+                <DataGridTextColumn Header="Номер телефона" Binding="{Binding PhoneNumber}" Width="20*"/>
+            </DataGrid.Columns>
+            <!--#endregion-->
+
+            <!--#region Контекстное меню -->
+            <DataGrid.ContextMenu>
+                <ContextMenu>
+
+                    <!-- Добавить клиента в номер -->
+                    <MenuItem Header="Добавить клиента"
+                              Command="{Binding AddClientRoomCommand}"/>
+                    <!-- Выселить клиента из номера -->
+                    <MenuItem Header="Выселить клиента"
+                              Command="{Binding EvictClientRoomCommand}"/>
+               
+                </ContextMenu>
+            </DataGrid.ContextMenu>
+            <!--#endregion-->
+
+        </DataGrid>
+        <!--#endregion-->
+
+    </StackPanel>
+    <!--#endregion-->
+
+</UserControl>

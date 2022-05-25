@@ -1,0 +1,126 @@
+﻿<Window x:Class="HotelApplication.MVVM.View.RoomView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:HotelApplication.MVVM.View"
+        xmlns:model="clr-namespace:HotelClassLibrary.Models;assembly=HotelClassLibrary"
+        xmlns:viewModel="clr-namespace:HotelApplication.MVVM.ViewModel"
+        mc:Ignorable="d"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        xmlns:conv="clr-namespace:HotelApplication.Converters"
+        Title="ClientWindow" Width="400"
+        SizeToContent="Height"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        Foreground="White"
+        FontSize="12">
+
+    <!-- DataContext -->
+    <Window.DataContext>
+        <viewModel:RoomViewModel/>
+    </Window.DataContext>
+
+
+    <!-- Ресурсы окна -->
+    <Window.Resources>
+
+        <!-- Конвертер возвращает строковое значение true если значение равно WindowState.AddState -->
+        <conv:AddWindowStateConverter x:Key="AddWindowStateConverter"/>
+
+        <!-- Конвертер возвращает строковое представление состояния запуска окна -->
+        <conv:WindowStateConverter x:Key="WindowStateConverter"/>
+
+        <!-- Стиль Label -->
+        <Style TargetType="Label">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Margin" Value="0"/>
+        </Style>
+
+        <!-- Стиль ComboBox -->
+        <Style TargetType="ComboBox">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="Margin" Value="0 0 0 20"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Foreground" Value="Black"/>
+        </Style>
+
+        <!-- Стиль TextBox -->
+        <Style TargetType="TextBox">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="Margin" Value="0 0 0 20"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="5 0 0 0"/>
+        </Style>
+
+
+    </Window.Resources>
+
+    <!-- Контент окна -->
+    <Border Background="#302E44"
+            CornerRadius="20">
+        <Grid>
+            <!-- Столбцы -->
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Строки -->
+            <Grid.RowDefinitions>
+                <RowDefinition Height="75"/>
+                <RowDefinition/>
+                <RowDefinition Height="80"/>
+            </Grid.RowDefinitions>
+
+            <!-- Прямоугольник для перетаскивания окна -->
+            <Rectangle Fill="Transparent"
+                           Grid.ColumnSpan="2"/>
+
+            <!-- Заголовок окна -->
+            <Label Name="LblHeader" Content="{Binding Header}"
+                   FontSize="20"
+                   Margin="20"
+                   Grid.ColumnSpan="2"
+                   HorizontalAlignment="Center"/>
+
+            <!-- Поля -->
+            <StackPanel Grid.Row="1" Margin="20">
+
+                <Label Content="Клиент:"/>
+
+                <ComboBox ItemsSource="{Binding SelectedClientsList}"
+                              SelectedValue="{Binding SelectedClient}"/>
+
+            </StackPanel>
+
+
+            <!-- Кнопки управления -->
+            <StackPanel Grid.Row="2" Orientation="Horizontal">
+
+                <!-- Кнопка ОК -->
+                <Button Name="BtnOK" Content="Выселить"
+                        Background="#4EFF91"
+                        Click="BtnOK_Click"
+                        Command="{Binding SaveRegistration}"
+                        Margin="20"/>
+
+                <!-- Кнопка Отмена -->
+                <Button Content="Отмена"
+                        Background="#844EFF"
+                        IsCancel="True"
+                        Margin="20"/>
+
+            </StackPanel>
+
+        </Grid>
+    </Border>
+</Window>

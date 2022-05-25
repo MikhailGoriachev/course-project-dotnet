@@ -1,0 +1,137 @@
+﻿<UserControl x:Class="HotelApplication.MVVM.View.ClientsManagementView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:HotelApplication.MVVM.View"
+             xmlns:model="clr-namespace:HotelApplication.MVVM.ViewModel"
+             xmlns:conv="clr-namespace:HotelApplication.Converters"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800"
+             Name="ControlUser">
+
+    <!-- DataContext -->
+    <UserControl.DataContext>
+        <model:ClientsManagementViewModel/>
+    </UserControl.DataContext>
+
+    <!-- Ресурсы -->
+    <UserControl.Resources>
+        
+        <!-- Конвертер, который отнимает число от значения -->
+        <conv:DoubleSubtractionConverter x:Key="DoubleSubtractionConverter"/>
+
+    </UserControl.Resources>
+
+    <!--#region Контент страницы -->
+    <StackPanel>
+        <!-- Заголовок -->
+        <TextBlock Text="Клиенты"
+                       Foreground="White"
+                       FontSize="28"
+                       HorizontalAlignment="Left"
+                       Margin="0 0 0 20"/>
+
+        <!--#region Инфрмационный блок -->
+        <StackPanel Orientation="Horizontal">
+            <Border Width="250"
+                    Height="50"
+                    CornerRadius="10">
+
+                <!--#region Фон -->
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0 0" EndPoint="1 2">
+                        <GradientStop Color="#5bc3ff" Offset="0"/>
+                        <GradientStop Color="#3aa0ff" Offset="1.1"/>
+                    </LinearGradientBrush>
+                </Border.Background>
+                <!--#endregion-->
+
+                <!--#region Контент -->
+                <StackPanel Orientation="Horizontal" 
+                                VerticalAlignment="Center"
+                                Margin="20 0">
+
+                    <TextBlock Text="Всего клиентов: "
+                                   Foreground="White"
+                                   FontSize="18"/>
+
+                    <TextBlock Text="{Binding CountClients}"
+                                   Foreground="White"
+                                   FontSize="18"/>
+                </StackPanel>
+                <!--#endregion-->
+            </Border>
+
+
+            <!-- Добавить клиента -->
+            <Button Content="Добавить клиента" Width="150"
+                        Command="{Binding AddClientCommand}"
+                        CommandParameter="{Binding SelectedClient}"
+                        Margin="20 0 10 0"
+                        Background="#4EFF91"/>
+
+            <!-- Изменить клиента -->
+            <Button Content="Изменить клиента" Width="150"
+                        Command="{Binding EditClientCommand}"
+                        CommandParameter="{Binding SelectedClient}"
+                        Margin="10 0"
+                        Background="#ECFF4E"/>
+
+            <!-- Удалить клиента -->
+            <Button Content="Удалить клиента" Width="150"
+                        Command="{Binding RemoveClientCommand}"
+                        CommandParameter="{Binding SelectedClient}"
+                        Margin="10 0"
+                        Background="#844EFF"/>
+
+        </StackPanel>
+        <!--#endregion-->
+
+        <!--#region Таблица с данными рабочих -->
+        <DataGrid Name="DgdClients" Margin="0 20" ItemsSource="{Binding Clients}"
+                  AutoGenerateColumns="False"
+                  AlternationCount="2"
+                  RowHeaderWidth="0"
+                  Height="{Binding ElementName=ControlUser, Path=ActualHeight, Converter={StaticResource DoubleSubtractionConverter}, ConverterParameter=150}"
+                  IsReadOnly="True"
+                  HorizontalAlignment="Left"
+                  SelectionMode="Single"
+                  Background="Transparent"
+                  SelectedItem="{Binding SelectedClient, Mode=TwoWay}"
+                  CanUserSortColumns="False">
+
+            <!--#region Заголовки таблицы-->
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Фамилия" Binding="{Binding Person.Surname}" Width="20*"/>
+                <DataGridTextColumn Header="Имя" Binding="{Binding Person.Name}" Width="20*"/>
+                <DataGridTextColumn Header="Отчество" Binding="{Binding Person.Patronymic}" Width="20*"/>
+                <DataGridTextColumn Header="Паспорт" Binding="{Binding Passport}" Width="20*"/>
+                <DataGridTextColumn Header="Статус" Binding="{Binding IsDeleted}" Width="20*"/>
+            </DataGrid.Columns>
+            <!--#endregion-->
+
+            <!--#region Контекстное меню -->
+            <DataGrid.ContextMenu>
+                <ContextMenu>
+                    <!-- Добавить клиента -->
+                    <MenuItem Header="Добавить клиента"
+                                  Command="{Binding AddClientCommand}"/>
+                    <!-- Редактировать клиента -->
+                    <MenuItem Header="Редактировать клиента"
+                                  Command="{Binding EditClientCommand}"/>
+                    <!-- Удалить клиента -->
+                    <MenuItem Header="Удалить клиента"
+                                  Command="{Binding RemoveClientCommand}"/>
+                </ContextMenu>
+            </DataGrid.ContextMenu>
+            <!--#endregion-->
+
+        </DataGrid>
+        <!--#endregion-->
+
+
+    </StackPanel>
+    <!--#endregion-->
+
+</UserControl>

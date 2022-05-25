@@ -1,0 +1,35 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <SolidColorBrush x:Key="FillPath" Color="White"/>
+
+    <LinearGradientBrush x:Key="BorderIconHoverBrush" StartPoint="0,0.5" EndPoint="1,0.5">
+        <GradientStop Color="#FF1D83BE" Offset="0.204" />
+        <GradientStop Color="#FF1ECDA7" Offset="0.864" />
+    </LinearGradientBrush>
+
+    <RadialGradientBrush x:Key="BorderIconBackgroundHoverBrush">
+        <RadialGradientBrush.RelativeTransform>
+            <TransformGroup>
+                <ScaleTransform CenterX="0.5" CenterY="0.5" ScaleX="1.804" ScaleY="0.743" />
+                <SkewTransform CenterX="0.5" CenterY="0.5" />
+                <RotateTransform CenterX="0.5" CenterY="0.5" />
+                <TranslateTransform Y="0.47999998927116394" />
+            </TransformGroup>
+        </RadialGradientBrush.RelativeTransform>
+        <GradientStop Color="#FF50D2F3" Offset="0.209" />
+        <GradientStop Color="#0098DAFF" Offset="1" />
+        <GradientStop Color="#FF8DDFFB" Offset="0" />
+    </RadialGradientBrush>
+
+    <!--#region Икнонки -->
+    
+    <!-- Выход -->
+    <Geometry x:Key="icon_close_white">M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z</Geometry>
+    
+    <!-- На весь экран -->
+    <Geometry x:Key="icon_fullscreen_white">M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z</Geometry>
+    <Geometry x:Key="icon_collapse_white">M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6-1.41-1.41z</Geometry>
+
+    <!--#endregion-->
+</ResourceDictionary>
