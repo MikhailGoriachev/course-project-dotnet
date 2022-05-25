@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HotelApplication.Core;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -9,34 +10,79 @@ using System.Threading.Tasks;
 namespace HotelClassLibrary.Models
 {
     // Класс Персона
-    public class Person
+    public class Person : ObservableObject
     {
         // первичный ключ
-        public int Id { get; set; }
+        private int _id;
+
+        public int Id
+        {
+            get => _id;
+            set
+            {
+                _id = value;
+                OnPropertyChanged("Id");
+            }
+        }
 
 
         // фамилия
         // [Required, Column(TypeName = "nvarchar(60)")]
+        private string _surname;
+
         [Required]
-        public string Surname { get; set; }
+        public string Surname
+        {
+            get => _surname;
+            set { 
+                _surname = value;
+                OnPropertyChanged("Surname");
+            }
+        }
 
 
         // имя
         // [Required, Column(TypeName = "nvarchar(40)")]
+        private string _name;
+
         [Required]
-        public string Name { get; set; }
+        public string Name
+        {
+            get => _name;
+            set { 
+                _name = value;
+                OnPropertyChanged("Name");
+            }
+        }
 
 
         // отчество
         // [Required, Column(TypeName = "nvarchar(60)")]
+        private string _patronymic;
+
         [Required]
-        public string Patronymic { get; set; }
+        public string Patronymic
+        {
+            get => _patronymic;
+            set { 
+                _patronymic = value;
+                OnPropertyChanged("Patronymic");
+            }
+        }
 
 
         // статус удаления
-        [Required]
-        public bool IsDeleted { get; set; }
+        private bool _isDeleted;
 
+        [Required]
+        public bool IsDeleted
+        {
+            get => _isDeleted;
+            set { 
+                _isDeleted = value;
+                OnPropertyChanged("IsDeleted");
+            }
+        }
 
     }
 }

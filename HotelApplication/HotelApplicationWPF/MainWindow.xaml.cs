@@ -23,6 +23,7 @@ using HotelClassLibrary.Context;            // базы данных
 
 using System.Windows.Threading;
 using System.Configuration;
+using System.Data.Entity;
 
 namespace HotelApplicationWPF
 {
@@ -31,29 +32,11 @@ namespace HotelApplicationWPF
     /// </summary>
     public partial class MainWindow : Window
     {
-        // контроллер заполнения данными БД
-        private HotelController _controller;
-
-        public HotelController Controller
-        {
-            get => _controller;
-            set => _controller = value;
-        }
-
-
         #region Конструкторы
 
         // конструктор по умолчанию
-        public MainWindow() : this(new HotelController(new HotelDB())) { }
-
-
-        // конструктор инициализирующий
-        public MainWindow(HotelController fillDataController)
-        {
+        public MainWindow(){
             InitializeComponent();
-
-            // установка значений
-            _controller = fillDataController;
         }
 
         #endregion
@@ -75,7 +58,7 @@ namespace HotelApplicationWPF
             ClearGrid(DgdTableData);
 
             // заполнение базы данных
-            await _controller.FillDataBase(DateTime.Now.AddDays(-Utils.GetRand(40, 60)));
+            await HotelController.FillDataBase(DateTime.Now.AddDays(-Utils.GetRand(40, 60)));
 
             // индикация загрузки
             UpdateGroupBox(GbxTable, $"Заполнение окончено!");
@@ -99,7 +82,7 @@ namespace HotelApplicationWPF
                 DateTime date = DateTime.Now;
 
                 // список занятых комнат
-                List<HotelRoom> rooms = _controller.GetHotelRoomsAsync().Result.Where(h => _controller.RoomIsBusy(h, date)).ToList();
+                List<HotelRoom> rooms = HotelController.GetHotelRoomsAsync().Result.Where(h => HotelController.RoomIsBusy(h, date)).ToList();
 
                 int number = 0;
 
@@ -108,7 +91,7 @@ namespace HotelApplicationWPF
                     number = rooms[Utils.GetRand(1, rooms.Count)].Number;
 
                 // заполнение DataGrid
-                UpdateBinding(DgdTableData, _controller.Proc1(number)
+                UpdateBinding(DgdTableData, HotelController.Proc1(number)
                                                        .Select(c => new {
                                                            c.Id,
                                                            c.Person.Surname,
@@ -134,13 +117,13 @@ namespace HotelApplicationWPF
                 ClearGrid(DgdTableData);
 
                 // города
-                List<City> cities = _controller.GetCitiesAsync().Result;
+                List<City> cities = HotelController.GetCitiesAsync().Result;
 
                 // выбранный город
                 string city = cities[Utils.GetRand(0, cities.Count)].Name;
 
                 // заполнение DataGrid
-                UpdateBinding(DgdTableData, _controller.Proc2(city)
+                UpdateBinding(DgdTableData, HotelController.Proc2(city)
                                                        .Select(c => new {
                                                            c.Id,
                                                            c.Person.Surname,
@@ -166,7 +149,7 @@ namespace HotelApplicationWPF
                 ClearGrid(DgdTableData);
 
                 // список регистраций в отеле
-                List<HistoryRegistrationHotel> list = _controller.GetHistoryRegistrationHotelAsync().Result;
+                List<HistoryRegistrationHotel> list = HotelController.GetHistoryRegistrationHotelAsync().Result;
 
                 // запись уборки
                 HistoryRegistrationHotel elem = list[Utils.GetRand(0, list.Count)];
@@ -175,7 +158,7 @@ namespace HotelApplicationWPF
                 DateTime date = elem.RegistrationDate.AddDays(Utils.GetRand(0, elem.Duration));
 
                 // заполнение DataGrid
-                UpdateBinding(DgdTableData, _controller.Proc3(elem.Client.Passport, date)
+                UpdateBinding(DgdTableData, HotelController.Proc3(elem.Client.Passport, date)
                                                        .Select(em => new {
                                                            em.Id,
                                                            em.Person.Surname,
@@ -205,7 +188,7 @@ namespace HotelApplicationWPF
                 DateTime date = DateTime.Now;
 
                 // заполнение DataGrid
-                UpdateBinding(DgdTableData, _controller.Proc4()
+                UpdateBinding(DgdTableData, HotelController.Proc4()
                                                        .Select(r => new {
                                                            r.Id,
                                                            TypeRoom = r.TypeHotelRoom.Name,
@@ -214,7 +197,7 @@ namespace HotelApplicationWPF
                                                            Floor = r.Floor.Number,
                                                            RoomNubmer = r.Number,
                                                            r.PhoneNumber,
-                                                           IsBusy = _controller.RoomIsBusy(r, date)
+                                                           IsBusy = HotelController.RoomIsBusy(r, date)
                                                        })
                                                        .ToList());
 
@@ -240,7 +223,7 @@ namespace HotelApplicationWPF
                 ClearGrid(DgdTableData);
 
                 // заполнение DataGrid
-                UpdateBinding(DgdTableData, _controller.GetCleaningScheduleAsync().Result
+                UpdateBinding(DgdTableData, HotelController.GetCleaningScheduleAsync().Result
                                                        .Select(c => new
                                                        {
                                                            c.Id,
@@ -253,7 +236,7 @@ namespace HotelApplicationWPF
                 // вывод наименование таблицы
                 //UpdateGroupBox(GbxTable, $"График уборки");
 
-                Report report = _controller.GetReport(DateTime.Now.AddDays(-356), DateTime.Now);
+                Report report = HotelController.GetReport(DateTime.Now.AddDays(-356), DateTime.Now);
                 UpdateGroupBox(GbxTable, $"График уборки | Количество клиентов: {report.CountClients}; Сумма: {report.Account}");
             });
 
@@ -269,7 +252,7 @@ namespace HotelApplicationWPF
                 ClearGrid(DgdTableData);
 
                 // заполнение DataGrid
-                Task.Run(() => UpdateBinding(DgdTableData, _controller.GetDaysOfWeekAsync().Result));
+                Task.Run(() => UpdateBinding(DgdTableData, HotelController.GetDaysOfWeekAsync().Result));
 
                 // вывод наименование таблицы
                 UpdateGroupBox(GbxTable, "Дни недели");
@@ -289,7 +272,7 @@ namespace HotelApplicationWPF
                 ClearGrid(DgdTableData);
 
                 // заполнение DataGrid
-                Task.Run(() => UpdateBinding(DgdTableData, _controller.GetCleaningHistoryAsync().Result
+                Task.Run(() => UpdateBinding(DgdTableData, HotelController.GetCleaningHistoryAsync().Result
                                                                       .Select(c => new
                                                                       {
                                                                           c.Id,
@@ -317,7 +300,7 @@ namespace HotelApplicationWPF
                 ClearGrid(DgdTableData);
 
                 // заполнение DataGrid
-                Task.Run(() => UpdateBinding(DgdTableData, _controller.GetHistoryRegistrationHotelAsync().Result
+                Task.Run(() => UpdateBinding(DgdTableData, HotelController.GetHistoryRegistrationHotelAsync().Result
                                                                       .Select(h => new
                                                                       {
                                                                           h.Id,
@@ -349,7 +332,7 @@ namespace HotelApplicationWPF
                 ClearGrid(DgdTableData);
 
                 // заполнение DataGrid
-                Task.Run(() => UpdateBinding(DgdTableData, _controller.GetCitiesAsync().Result));
+                Task.Run(() => UpdateBinding(DgdTableData, HotelController.GetCitiesAsync().Result));
 
                 // вывод наименование таблицы
                 UpdateGroupBox(GbxTable, "Города");
@@ -371,7 +354,7 @@ namespace HotelApplicationWPF
                 DateTime date = DateTime.Now;
 
                 // заполнение DataGrid
-                UpdateBinding(DgdTableData, _controller.GetHotelRoomsAsync().Result
+                UpdateBinding(DgdTableData, HotelController.GetHotelRoomsAsync().Result
                                                        .Select(r => new
                                                        {
                                                            r.Id,
@@ -381,7 +364,7 @@ namespace HotelApplicationWPF
                                                            Floor = r.Floor.Number,
                                                            RoomNubmer = r.Number,
                                                            r.PhoneNumber,
-                                                           IsBusy = _controller.RoomIsBusy(r, date)
+                                                           IsBusy = HotelController.RoomIsBusy(r, date)
                                                        })
                                                        .ToList());
 
@@ -401,7 +384,7 @@ namespace HotelApplicationWPF
                 ClearGrid(DgdTableData);
 
                 // заполнение DataGrid
-                Task.Run(() => UpdateBinding(DgdTableData, _controller.GetTypesHotelRoomAsync().Result));
+                Task.Run(() => UpdateBinding(DgdTableData, HotelController.GetTypesHotelRoomAsync().Result));
 
                 // вывод наименование таблицы
                 UpdateGroupBox(GbxTable, "Типы номеров");
@@ -419,7 +402,7 @@ namespace HotelApplicationWPF
                 ClearGrid(DgdTableData);
 
                 // заполнение DataGrid
-                Task.Run(() => UpdateBinding(DgdTableData, _controller.GetFloorsAsync().Result));
+                Task.Run(() => UpdateBinding(DgdTableData, HotelController.GetFloorsAsync().Result));
 
                 // вывод наименование таблицы
                 UpdateGroupBox(GbxTable, "Этажи");
@@ -437,7 +420,7 @@ namespace HotelApplicationWPF
                 ClearGrid(DgdTableData);
 
                 // заполнение DataGrid
-                Task.Run(() => UpdateBinding(DgdTableData, _controller.GetEmployeesAsync().Result
+                Task.Run(() => UpdateBinding(DgdTableData, HotelController.GetEmployeesAsync().Result
                                                                       .Select(em => new
                                                                       {
                                                                           em.Id,
@@ -463,7 +446,7 @@ namespace HotelApplicationWPF
                 ClearGrid(DgdTableData);
 
                 // заполнение DataGrid
-                Task.Run(() => UpdateBinding(DgdTableData, _controller.GetClientsAsync().Result
+                Task.Run(() => UpdateBinding(DgdTableData, HotelController.GetClientsAsync().Result
                                                                       .Select(c => new
                                                                       {
                                                                           c.Id,
@@ -491,7 +474,7 @@ namespace HotelApplicationWPF
                 ClearGrid(DgdTableData);
 
                 // заполнение DataGrid
-                Task.Run(() => UpdateBinding(DgdTableData, _controller.GetPersonsAsync().Result));
+                Task.Run(() => UpdateBinding(DgdTableData, HotelController.GetPersonsAsync().Result));
 
                 // вывод наименование таблицы
                 UpdateGroupBox(GbxTable, "Персоны");

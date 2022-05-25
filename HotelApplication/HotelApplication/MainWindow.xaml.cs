@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using HotelApplication.MVVM.ViewModel;
 
 namespace HotelApplication
 {
@@ -23,6 +24,11 @@ namespace HotelApplication
         public MainWindow()
         {
             InitializeComponent();
+
+            DataContext = new MainViewModel(this);
         }
+
+        // Перетаскивание окна
+        private void Rectangle_MouseEnter(object sender, MouseEventArgs e) => DragMove();
     }
 }

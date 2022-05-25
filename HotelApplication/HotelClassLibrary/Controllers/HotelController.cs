@@ -15,16 +15,18 @@ using System.Threading.Tasks;
 using HotelClassLibrary.Models;         // модели
 using HotelClassLibrary.Utilities;      // утилиты
 using HotelClassLibrary.Context;        // базы данных
+using System.ComponentModel;
+using System.Collections.ObjectModel;
 
 namespace HotelClassLibrary.Controllers
 {
     // Класс Контроллер заполнения таблиц базы данных тестовыми данными
-    public class HotelController
+    public static class HotelController
     {
         // модель базы данных
-        private HotelDB _data;
+        private static HotelDB _data;
 
-        public HotelDB Data
+        public static HotelDB Data
         {
             get => _data;
             set => _data = value;
@@ -33,15 +35,11 @@ namespace HotelClassLibrary.Controllers
 
         #region Конструкторы
 
-        // конструктор по умолчанию
-        public HotelController() : this(new HotelDB()) { }
-
-
-        // конструктор инициализирующий
-        public HotelController(HotelDB hotelDb)
+        // статический конструктор
+        static HotelController()
         {
             // установка значений
-            _data = hotelDb;
+            _data = new HotelDB();
 
             _data.Configuration.LazyLoadingEnabled = true;
         }
@@ -50,21 +48,82 @@ namespace HotelClassLibrary.Controllers
 
         #region Методы
 
-        // получить статус номера - свободен или занят (занято - true) в заданную дату
-        public bool RoomIsBusy(HotelRoom room, DateTime date) => GetHistoryRegistrationHotelAsync().Result
-                            .FirstOrDefault(h => date.Date >= h.RegistrationDate.Date && date <= h.RegistrationDate.AddDays(h.Duration).Date
-                                                        && h.HotelRoom.Id == room.Id) != null;
+        // добавление клиента
+        public static void AddClient(Client client)
+        {
+            // установка статуса добавления
+            _data.Entry(client).State = EntityState.Added;
 
+            // добавить клиента
+            _data.Clients.AddOrUpdate(client);
+
+            // сохранить в базу данных
+            _data.SaveChanges();
+        }
+
+
+        // удаление клиента
+        public static void RemoveClient(Client client)
+        {
+            // установка статуса удаления клиента
+            client.IsDeleted = true;
+
+            // сохранить в базу данных
+            _data.SaveChanges();
+        }
+
+
+        // добавление города
+        public static void AddCity(City city)
+        {
+            // установка статуса добавления
+            _data.Entry(city).State = EntityState.Added;
+
+            // добавить город
+            _data.Cities.AddOrUpdate(city);
+
+            // сохранить в базу данных
+            _data.SaveChanges();
+        }
+
+
+        // удаление города
+        public static void RemoveCity(City city)
+        {
+            // установка статуса удаления клиента
+            city.IsDeleted = true;
+
+            // сохранить в базу данных
+            _data.SaveChanges();
+        }
+
+
+        // получить статус номера - свободен или занят (занято - true) в заданную дату
+        public static bool RoomIsBusy(HotelRoom room, DateTime date)
+        {
+            // текущая дата
+            date = DateTime.Now.Date;
+
+            var history = GetHistoryRegistrationHotel().FirstOrDefault(h =>
+                            {
+                                DateTime end = h.RegistrationDate.AddDays(h.Duration).Date;
+
+                                return h.Duration != 0 && date.Date >= h.RegistrationDate.Date && date < end
+                                       && h.HotelRoom.Id == room.Id;
+                            }) ;
+
+            return history != null;
+        }
 
         // получить количество занятых мест номера - в заданную дату
-        public int CountBusyPlace(HotelRoom room, DateTime date) => GetHistoryRegistrationHotelAsync().Result
-                            .Where(h => date.Date >= h.RegistrationDate.Date && date <= h.RegistrationDate.AddDays(h.Duration).Date 
+        public static int CountBusyPlace(HotelRoom room, DateTime date) => GetHistoryRegistrationHotel()
+                            .Where(h => h.Duration != 0 && date.Date >= h.RegistrationDate.Date && date.Date < h.RegistrationDate.AddDays(h.Duration).Date
                                     && h.HotelRoom.Id == room.Id)
                             .Count();
 
 
         // операция над записью таблицы
-        public void ChangeEntity(DbEntityEntry entity, EntityState state, DbSet dbSet)
+        public static void ChangeEntity(DbEntityEntry entity, EntityState state, DbSet dbSet)
         {
             // установка состояния
             _data.Entry(entity).State = state;
@@ -87,38 +146,11 @@ namespace HotelClassLibrary.Controllers
         }
 
 
-
-
-        #region Функции администратора
-
-        /*
-         * Администратор должен иметь возможность выполнить следующие операции:
-         *  •	принять на работу или уволить служащего гостиницы
-         *  •	изменить расписание работы служащего
-         *  •	поселить или выселить клиента.
-        */
-
-        // принять на работу или уволить служащего гостиницы
-        public void AddEmployee(Employee employee)
+        // сохранить изменения в базе данных
+        public static void SaveChanges()
         {
-            // добавить служащего
-            _data.Employees.AddOrUpdate(employee);
-
-            // сохранить в базу данных
             _data.SaveChanges();
-
-            // корректировка графика уборки
-            CorrectCleaningSchedule();
         }
-
-
-        // изменить расписание работы служащего
-
-
-        // поселить или выселить клиента
-
-        #endregion
-
 
 
         #region Операции администратора
@@ -133,38 +165,29 @@ namespace HotelClassLibrary.Controllers
         //      и свободен каждый из номеров гостиницы, общая сумма дохода.
 
 
-        // принять на работу или уволить служащего гостиницы
-        public async Task AddEmployeeAsync(Employee employee) =>
-            await Task.Run(() =>
-            {
-                // добавить служащего
-                _data.Employees.Add(employee);
-
-                // установка статуса добавления
-                _data.Entry(employee).State = EntityState.Added;
-
-                // асинхронное добавление
-                _data.SaveChanges();
-
-                // корректировка графика уборки
-                CorrectCleaningSchedule();
-            });
-
-
-        #region Изменить расписание уборки
-
-        // изменить расписание уборки
-        // параметры: addDays - новые дни работы, deleteDays - удаляемые дни работы
-        public void ChangeSchedule(List<CleaningSchedule> addDays, List<CleaningSchedule> deleteDays)
+        // принять на работу 
+        public static void AddEmployee(Employee employee)
         {
-            // добавление записей
-            addDays.ForEach(d => _data.Entry(d).State = EntityState.Added);
-            _data.CleaningSchedule.AddRange(addDays);
+            // установка статуса добавления
+            _data.Entry(employee).State = EntityState.Added;
+
+            // добавить служащего
+            _data.Employees.AddOrUpdate(employee);
+
+            // сохранить в базу данных
             _data.SaveChanges();
 
-            // удаление записей
-            deleteDays.ForEach(d => _data.Entry(deleteDays).State = EntityState.Deleted);
-            _data.CleaningSchedule.RemoveRange(deleteDays);
+            // корректировка графика уборки
+            CorrectCleaningSchedule();
+        }
+
+        // уволить служащего гостиницы
+        public static void RemoveEmployee(Employee employee)
+        {
+            // уволить служащего
+            employee.IsDeleted = true;
+
+            // сохранить в базу данных
             _data.SaveChanges();
 
             // корректировка графика уборки
@@ -172,11 +195,76 @@ namespace HotelClassLibrary.Controllers
         }
 
 
+        #region Изменить расписание уборки
+
+        // получить график работника
+        public static List<CleaningSchedule> GetSheduleEmployee(Employee employee)
+        {
+            // получить записи из графика уборки по текущему работнику
+            List<CleaningSchedule> cleaningSchedule = GetCleaningSchedule().Where(c => c.Employee.Id == employee.Id).ToList();
+
+            return cleaningSchedule;
+        }
+        
+        
+        // установить график работника
+        public static void SetSheduleEmployee(Employee employee, List<(int day, int floor)> shedule)
+        {
+            // получить записи из графика уборки по текущему работнику
+            List<CleaningSchedule> cleaningSchedule = GetCleaningSchedule().Where(c => c.Employee.Id == employee.Id).ToList();
+
+            // получить записи которых нет в новом графике
+            List<CleaningSchedule> deletedSchedule = cleaningSchedule.Where(c => shedule.IndexOf((c.DayOfWeek.Number, c.Floor.Number)) == -1).ToList();
+
+            // дни недели 
+            List<Models.DayOfWeek> days = GetDaysOfWeek();
+
+            // этажи
+            List<Floor> floors = GetFloors();
+
+            // получить записи которых есть в новом графике, но нет в старом
+            cleaningSchedule = shedule.Where(s => cleaningSchedule.Find(c => (c.DayOfWeek.Number, c.Floor.Number) == (s.day, s.floor)) == null)
+                                      .Select(s => new CleaningSchedule
+                                      {
+                                          DayOfWeek = days.First(d => d.Number == s.day),
+                                          Employee = employee,
+                                          Floor = floors.First(f => f.Number == s.floor)
+                                      }).ToList();
+
+            // изменение расписания
+            ChangeSchedule(cleaningSchedule, deletedSchedule);
+
+            // корректировка графика уборки
+            CorrectCleaningSchedule(employee);
+        }
+
+        // изменить расписание уборки
+        // параметры: addDays - новые дни работы, deleteDays - удаляемые дни работы
+        public static void ChangeSchedule(List<CleaningSchedule> addDays, List<CleaningSchedule> deleteDays)
+        {
+            // получить записи, которые нужно удалить
+            deleteDays.AddRange(GetCleaningSchedule().Where(c => addDays.FirstOrDefault(d => (d.DayOfWeek.Number, d.Floor.Number) == (c.DayOfWeek.Number, c.Floor.Number)) != null));
+
+            // добавление записей
+            addDays.ForEach(d => _data.Entry(d).State = EntityState.Added);
+            _data.CleaningSchedule.AddRange(addDays);
+            _data.SaveChanges();
+
+            // удаление записей
+            deleteDays.ForEach(d => _data.Entry(d).State = EntityState.Deleted);
+            _data.CleaningSchedule.RemoveRange(deleteDays);
+            _data.SaveChanges();
+        }
+
+
         // корректировка графика уборки
-        public void CorrectCleaningSchedule()
+        public static void CorrectCleaningSchedule(Employee exceptionEmployee = null)
         {
             // список полученных записей
-            List<CleaningSchedule> list = new List<CleaningSchedule>();
+            List<CleaningSchedule> schedule = GetCleaningSchedule();
+
+            // удаление записей уволенных работников
+            ChangeSchedule(new List<CleaningSchedule>(), schedule.Where(s => s.Employee.IsDeleted).ToList());
 
             // цикл перебора дней недели
             foreach (var day in _data.DaysOfWeek)
@@ -185,15 +273,15 @@ namespace HotelClassLibrary.Controllers
                 foreach (var floor in _data.Floors)
                 {
                     // поиск записей для этого этажа и дня недели
-                    list = _data.CleaningSchedule.Where(c => c.DayOfWeek == day && c.Floor == floor)
+                    schedule = _data.CleaningSchedule.Where(c => c.DayOfWeek.Id == day.Id && c.Floor.Id == floor.Id)
                                                  .ToList();
-                    
+
                     // если список пуст - установить работника на этот день, 
                     // у которго меньше всего рабочих дней
-                    if (list.Count == 0)
+                    if (schedule.Count == 0)
                     {
-                        CleaningSchedule c = new CleaningSchedule{
-                            Employee = GetMinEmployee(),
+                        CleaningSchedule c = new CleaningSchedule {
+                            Employee = GetMinEmployeeEmptyDay(day.Number, exceptionEmployee),
                             DayOfWeek = day,
                             Floor = floor
                         };
@@ -201,16 +289,16 @@ namespace HotelClassLibrary.Controllers
                         _data.Entry(c).State = EntityState.Added;
                         _data.CleaningSchedule.Add(c);
                     }
-                        
+
                     // найдено записей больше 1, то все записи кроме последней
-                    if (list.Count > 1)
+                    if (schedule.Count > 1)
                     {
                         // удаление первой записи из списка
-                        list.Remove(list[0]);
+                        schedule.Remove(schedule[0]);
 
                         // удаление оставшихся записей из базы данных
-                        list.ForEach(c => _data.Entry(c).State = EntityState.Deleted);
-                        _data.CleaningSchedule.RemoveRange(list);
+                        schedule.ForEach(c => _data.Entry(c).State = EntityState.Deleted);
+                        _data.CleaningSchedule.RemoveRange(schedule);
                     }
                 }
             }
@@ -220,13 +308,38 @@ namespace HotelClassLibrary.Controllers
         }
 
 
-        // получить работника, у которого меньше всего рабочих дней
-        public Employee GetMinEmployee() 
+        // получить работника, у которого меньше всего рабочих дней, по указанному дню
+        public static Employee GetMinEmployeeEmptyDay(int day, Employee exceptionEmployee)
+        {
+            // список работников, которые не работают в этот день
+            List<Employee> employees = GetEmployeesListEmptyDay(day);
+
+            // удаление из списка работника, который указан, как исключенный 
+            employees.Remove(exceptionEmployee);
+
+            // получить коллекцию работников с количеством смен
+            var em = employees.Where(e => e.IsDeleted == false)
+                            .Select(e => new { Employee = e, Count = _data.CleaningSchedule.Count(c => c.Employee.Id == e.Id) })
+                            .ToList();
+
+            
+
+            // минимальное значение количества смен
+            int min = em.Min(e => e.Count);
+
+            return em.First(e => e.Count == min).Employee;
+        }
+
+
+        // получить работника, у которого меньше всего рабочих дней, по указанному дню
+        public static Employee GetMinEmployee()
         {
             // получить коллекцию работников с количеством смен
             var em = _data.Employees.Where(e => e.IsDeleted == false)
-                            .Select(e => new {Employee = e, Count =_data.CleaningSchedule.Count(c => c.Employee.Id == e.Id)})
+                            .Select(e => new { Employee = e, Count = _data.CleaningSchedule.Count(c => c.Employee.Id == e.Id) })
                             .ToList();
+
+            
 
             // минимальное значение количества смен
             int min = em.Min(e => e.Count);
@@ -238,19 +351,46 @@ namespace HotelClassLibrary.Controllers
 
 
         // разместить клиента
-        public bool PlaceClient(Client client, HotelRoom room, City city, int Duration)
+        public static bool PlaceClient(Client client, HotelRoom room, City city, int Duration)
         {
             // если номер заполнен
-            if(CountBusyPlace(room, DateTime.Now) == room.TypeHotelRoom.CountPlace)
+            if (CountBusyPlace(room, DateTime.Now) == room.TypeHotelRoom.CountPlace)
                 return false;
 
             // запись регистрации
-            HistoryRegistrationHotel registration = new HistoryRegistrationHotel{
-                                                            Client = client,
-                                                            HotelRoom = room,
-                                                            Duration = Duration,
-                                                            City = city
-                                                        };
+            HistoryRegistrationHotel registration = new HistoryRegistrationHotel {
+                Client = client,
+                HotelRoom = room,
+                Duration = Duration,
+                City = city
+            };
+
+            // установить статус
+            _data.Entry(registration).State = EntityState.Added;
+
+            // добавить в коллекцию
+            _data.HistoryRegistrationHotel.Add(registration);
+
+            // сохранить изменения в базе данных
+            _data.SaveChanges();
+
+            return true;
+        }
+
+        // разместить клиента
+        public static bool PlaceClient(HistoryRegistrationHotel registration)
+        {
+            // если номер заполнен
+            if (CountBusyPlace(registration.HotelRoom, DateTime.Now) == registration.HotelRoom.TypeHotelRoom.CountPlace)
+                return false;
+
+            // запись регистрации
+            //HistoryRegistrationHotel registration = new HistoryRegistrationHotel {
+            //    Client = client,
+            //    HotelRoom = room,
+            //    Duration = Duration,
+            //    City = city
+            //};
 
             // установить статус
             _data.Entry(registration).State = EntityState.Added;
@@ -268,14 +408,14 @@ namespace HotelClassLibrary.Controllers
         // выселить клиента 
         // параметр room - для того, чтоб выселить клиента из конкретного номера, так как 
         // один клиент может жить в нескольких номерах, по умолчанию null
-        public bool EvictClient(Client client, HotelRoom room = null)
+        public static bool EvictClient(Client client, HotelRoom room = null)
         {
             // текущая дата
             DateTime now = DateTime.Now.Date;
 
             // записи о регистрации клиента по текущей дате
             List<HistoryRegistrationHotel> list = _data.HistoryRegistrationHotel.ToList()
-                                                    .Where(h => h.Client == client 
+                                                    .Where(h => h.Client == client
                                                             && now >= h.RegistrationDate.Date
                                                             && now <= h.RegistrationDate.AddDays(h.Duration).Date)
                                                     .ToList();
@@ -289,7 +429,7 @@ namespace HotelClassLibrary.Controllers
             {
                 // поиск записи по номеру проживания
                 HistoryRegistrationHotel elem = list.First(h => h.HotelRoom.Id == room.Id);
-                
+
                 // если записей по указанному номеру не найдено
                 if (elem == null)
                     return false;
@@ -325,14 +465,14 @@ namespace HotelClassLibrary.Controllers
 
 
         // получение счёта за проживание клиента
-        public int GetAccount(Client client, HotelRoom room = null, DateTime dateStart = new DateTime())
+        public static  int GetAccount(Client client, HotelRoom room = null, DateTime dateStart = new DateTime())
         {
             // поиск записей регистрации по данному колиенту и дате
             List<HistoryRegistrationHotel> histories = GetHistoryRegistrationHotelAsync().Result;
 
             // если текущая дата равна нулевой дате, то получить последнюю запись клиента
-            HistoryRegistrationHotel elem = dateStart.Year == 0 
-                                                            ? histories.FirstOrDefault(h => h.Client == client && h.RegistrationDate.Date == dateStart.Date 
+            HistoryRegistrationHotel elem = dateStart.Year == 0
+                                                            ? histories.FirstOrDefault(h => h.Client == client && h.RegistrationDate.Date == dateStart.Date
                                                                                                                && h.HotelRoom.Id == (room ?? h.HotelRoom).Id)
                                                             : histories.FirstOrDefault(h => h.Client == client && h.HotelRoom.Id == (room ?? h.HotelRoom).Id
                                                                                                                && h.HotelRoom.Id == (room ?? h.HotelRoom).Id);
@@ -343,7 +483,7 @@ namespace HotelClassLibrary.Controllers
 
 
         // получение отчёта за указанный квартал
-        public Report GetReport(DateTime begin, DateTime end) => 
+        public static  Report GetReport(DateTime begin, DateTime end) =>
             new Report(GetHotelRoomsAsync().Result, GetHistoryRegistrationHotelAsync().Result, begin, end);
 
 
@@ -352,7 +492,7 @@ namespace HotelClassLibrary.Controllers
         #region Запросы
 
         // 1.	О клиентах, проживающих в заданном номере
-        public List<Client> Proc1(int roomNum)
+        public static  List<Client> Proc1(int roomNum)
         {
             // текущая дата
             DateTime date = DateTime.Now;
@@ -366,7 +506,7 @@ namespace HotelClassLibrary.Controllers
 
 
             // выборка клиентов проживающих в заданном номере
-            return GetHistoryRegistrationHotelAsync().Result.Where(h => h.HotelRoom.Number == roomNum && date.Date >= h.RegistrationDate.Date 
+            return GetHistoryRegistrationHotelAsync().Result.Where(h => h.HotelRoom.Number == roomNum && date.Date >= h.RegistrationDate.Date
                                                                                           && date <= h.RegistrationDate.AddDays(h.Duration).Date)
                                                             .Select(h => h.Client)
                                                             .Distinct()
@@ -375,14 +515,14 @@ namespace HotelClassLibrary.Controllers
 
 
         // 2.	О клиентах, прибывших из заданного города
-        public List<Client> Proc2(string city) => GetHistoryRegistrationHotelAsync().Result.Where(h => h.City.Name == city)
+        public static  List<Client> Proc2(string city) => GetHistoryRegistrationHotelAsync().Result.Where(h => h.City.Name == city)
                                                                                            .Select(h => h.Client)
                                                                                            .Distinct()
                                                                                            .ToList();
 
 
         // 3.	О том, кто из служащих убирал номер указанного клиента в заданный день недели
-        public List<Employee> Proc3(string passport, DateTime date)
+        public static  List<Employee> Proc3(string passport, DateTime date)
         {
             // комната
             HotelRoom room = GetHistoryRegistrationHotelAsync().Result.First(h => h.Client.Passport == passport && RoomIsBusy(h.HotelRoom, date))?.HotelRoom;
@@ -400,7 +540,7 @@ namespace HotelClassLibrary.Controllers
 
 
         // 4.	Есть ли в гостинице свободные места и свободные номера и, если есть, то сколько и какие именно номера свободны.
-        public List<HotelRoom> Proc4()
+        public static  List<HotelRoom> Proc4()
         {
             // текущая дата
             DateTime date = DateTime.Now;
@@ -416,63 +556,265 @@ namespace HotelClassLibrary.Controllers
 
 
         // получить данные из таблицы График уборки				        (CleaningSchedule)
-        public async Task<List<CleaningSchedule>> GetCleaningScheduleAsync() => await _data.CleaningSchedule.Include(c => c.Employee)
-                                                                                                       .Include(c => c.Employee.Person)
-                                                                                                       .Include(c => c.Floor)
-                                                                                                       .Include(c => c.DayOfWeek)
-                                                                                                       .ToListAsync();
+        public static async Task<List<CleaningSchedule>> GetCleaningScheduleAsync() => await _data.CleaningSchedule.Include(c => c.Employee)
+                                                                                                            .Include(c => c.Employee.Person)
+                                                                                                            .Include(c => c.Floor)
+                                                                                                            .Include(c => c.DayOfWeek)
+                                                                                                            .ToListAsync();
+
+        public static List<CleaningSchedule> GetCleaningSchedule() => _data.CleaningSchedule.Include(c => c.Employee)
+                                                                                            .Include(c => c.Employee.Person)
+                                                                                            .Include(c => c.Floor)
+                                                                                            .Include(c => c.DayOfWeek)
+                                                                                            .ToList();
+
+        // получение списка привязки
+        public static  BindingList<CleaningSchedule> GetCleaningScheduleBindingList()
+        {
+            // загрузка данных
+            _data.CleaningSchedule.Include(c => c.Employee)
+                                  .Include(c => c.Employee.Person)
+                                  .Include(c => c.Floor)
+                                  .Include(c => c.DayOfWeek)
+                                  .Load();
+
+            // получаение списка привязки
+            return _data.CleaningSchedule.Local.ToBindingList();
+        }
 
 
         // получить данные из таблицы Дни недели					    (DaysOfWeek)
-        public async Task<List<Models.DayOfWeek>> GetDaysOfWeekAsync() => await _data.DaysOfWeek.ToListAsync();
+        public static async Task<List<Models.DayOfWeek>> GetDaysOfWeekAsync() => await _data.DaysOfWeek.ToListAsync();
+        public static List<Models.DayOfWeek> GetDaysOfWeek() =>_data.DaysOfWeek.ToList();
+
+        // получение списка привязки
+        public static  BindingList<Models.DayOfWeek> GetDaysOfWeekBindingList()
+        {
+            // загрузка данных
+            _data.DaysOfWeek.Load();
+
+            // получаение списка привязки
+            return _data.DaysOfWeek.Local.ToBindingList();
+        }
 
 
         // получить данные из таблицы История фактов уборки		        (CleaningHistory)
-        public async Task<List<CleaningHistory>> GetCleaningHistoryAsync() => await _data.CleaningHistory.Include(h => h.Employee)
+        public static async Task<List<CleaningHistory>> GetCleaningHistoryAsync() => await _data.CleaningHistory.Include(h => h.Employee)
                                                                                                          .Include(c => c.Employee.Person)
                                                                                                          .Include(h => h.Floor)
                                                                                                          .ToListAsync();
 
+        public static  List<CleaningHistory> GetCleaningHistory() => _data.CleaningHistory.Include(h => h.Employee)
+                                                                                          .Include(c => c.Employee.Person)
+                                                                                          .Include(h => h.Floor)
+                                                                                          .ToList();
+
+        // получение списка привязки
+        public static  BindingList<CleaningHistory> GetCleaningHistoryBindingList()
+        {
+            // загрузка данных
+            _data.CleaningHistory.Include(h => h.Employee)
+                                 .Include(c => c.Employee.Person)
+                                 .Include(h => h.Floor)
+                                 .Load();
+
+            // получаение списка привязки
+            return _data.CleaningHistory.Local.ToBindingList();
+        }
+
 
         // получить данные из таблицы История поселений в гостиницу     (HistoryRegistrationHotel)
-        public async Task<List<HistoryRegistrationHotel>> GetHistoryRegistrationHotelAsync() => await _data.HistoryRegistrationHotel.Include(r => r.Client)
-                                                                                                                                    .Include(r => r.Client.Person)
-                                                                                                                                    .Include(r => r.City)
-                                                                                                                                    .Include(r => r.HotelRoom)
-                                                                                                                                    .Include(r => r.HotelRoom.TypeHotelRoom)
-                                                                                                                                    .Include(r => r.HotelRoom.Floor)
-                                                                                                                                    .ToListAsync();
+        public static async Task<List<HistoryRegistrationHotel>> GetHistoryRegistrationHotelAsync() => await _data.HistoryRegistrationHotel.Include(r => r.Client)
+                                                                                                                                           .Include(r => r.Client.Person)
+                                                                                                                                           .Include(r => r.City)
+                                                                                                                                           .Include(r => r.HotelRoom)
+                                                                                                                                           .Include(r => r.HotelRoom.TypeHotelRoom)
+                                                                                                                                           .Include(r => r.HotelRoom.Floor)
+                                                                                                                                           .ToListAsync();
+
+        public static List<HistoryRegistrationHotel> GetHistoryRegistrationHotel() => _data.HistoryRegistrationHotel.Include(r => r.Client)
+                                                                                                                    .Include(r => r.Client.Person)
+                                                                                                                    .Include(r => r.City)
+                                                                                                                    .Include(r => r.HotelRoom)
+                                                                                                                    .Include(r => r.HotelRoom.TypeHotelRoom)
+                                                                                                                    .Include(r => r.HotelRoom.Floor)
+                                                                                                                    .ToList();
+
+
+        // получение списка привязки
+        public static  BindingList<HistoryRegistrationHotel> GetHistoryRegistrationHotelBindingList()
+        {
+            // загрузка данных
+            _data.HistoryRegistrationHotel.Include(r => r.Client)
+                                          .Include(r => r.Client.Person)
+                                          .Include(r => r.City)
+                                          .Include(r => r.HotelRoom)
+                                          .Include(r => r.HotelRoom.TypeHotelRoom)
+                                          .Include(r => r.HotelRoom.Floor)
+                                          .Load();
+
+            // получаение списка привязки
+            return _data.HistoryRegistrationHotel.Local.ToBindingList();
+        }
+
+
+        // получение списка привязки записей, которые относятся к текущему времени
+        public static List<HistoryRegistrationHotel> GetCurrentHistoryRegistrationHotel()
+        {
+            // текущая дата 
+            DateTime date = DateTime.Now.Date;
+
+            // загрузка данных
+            _data.HistoryRegistrationHotel.Include(r => r.Client)
+                                          .Include(r => r.Client.Person)
+                                          .Include(r => r.City)
+                                          .Include(r => r.HotelRoom)
+                                          .Include(r => r.HotelRoom.TypeHotelRoom)
+                                          .Include(r => r.HotelRoom.Floor)
+                                          .Load();
+
+            var list = _data.HistoryRegistrationHotel.Local;
+
+            // получаение списка привязки
+            return list.Where(h => h.Duration != 0 && date >= h.RegistrationDate.Date && date < h.RegistrationDate.AddDays(h.Duration).Date).ToList();
+            //return _data.HistoryRegistrationHotel.Local.Where(h => h.RegistrationDate.Date >= date && h.RegistrationDate.AddDays(h.Duration).Date <= date).ToList();
+        }
 
 
         // получить данные из таблицы Города					        (Cities)
-        public async Task<List<City>> GetCitiesAsync() => await _data.Cities.ToListAsync();
+        public static  async Task<List<City>> GetCitiesAsync() => await _data.Cities.ToListAsync();
+
+        // получение списка привязки
+        public static  BindingList<City> GetCitiesBindingList()
+        {
+            // загрузка данных
+            _data.Cities.Load();
+
+            // получаение списка привязки
+            return _data.Cities.Local.ToBindingList();
+        }
+
 
 
         // получить данные из таблицы Номера гостиницы					(HotelRooms)
-        public async Task<List<HotelRoom>> GetHotelRoomsAsync() => await _data.HotelRooms.Include(r => r.TypeHotelRoom)
-                                                                                         .Include(r => r.Floor)
-                                                                                         .ToListAsync();
+        public static async Task<List<HotelRoom>> GetHotelRoomsAsync() => await _data.HotelRooms.Include(r => r.TypeHotelRoom)
+                                                                                                .Include(r => r.Floor)
+                                                                                                .ToListAsync();
+
+        public static  List<HotelRoom> GetHotelRooms() => _data.HotelRooms.Include(r => r.TypeHotelRoom)
+                                                                          .Include(r => r.Floor)
+                                                                          .ToList();
+
+        // получение списка привязки
+        public static  BindingList<HotelRoom> GetHotelRoomsBindingList()
+        {
+            // загрузка данных
+            _data.HotelRooms.Include(r => r.TypeHotelRoom)
+                            .Include(r => r.Floor)
+                            .Load();
+
+            // получаение списка привязки
+            return _data.HotelRooms.Local.ToBindingList();
+        }
+
 
 
         // получить данные из таблицы Типы номеров						(TypesHotelRoom)
-        public async Task<List<TypeHotelRoom>> GetTypesHotelRoomAsync() => await _data.TypesHotelRoom.ToListAsync();
+        public static  async Task<List<TypeHotelRoom>> GetTypesHotelRoomAsync() => await _data.TypesHotelRoom.ToListAsync();
+
+        // получение списка привязки
+        public static  BindingList<TypeHotelRoom> GetTypesHotelRoomBindingList()
+        {
+            // загрузка данных
+            _data.TypesHotelRoom.Load();
+
+            // получаение списка привязки
+            return _data.TypesHotelRoom.Local.ToBindingList();
+        }
+
 
 
         // получить данные из таблицы Этажи						        (Floors)
-        public async Task<List<Floor>> GetFloorsAsync() => await _data.Floors.ToListAsync();
+        public static async Task<List<Floor>> GetFloorsAsync() => await _data.Floors.ToListAsync();
+        public static List<Floor> GetFloors() => _data.Floors.ToList();
+
+        // получение списка привязки
+        public static BindingList<Floor> GetFloorsBindingList()
+        {
+            // загрузка данных
+            _data.Floors.Load();
+
+            // получаение списка привязки
+            return _data.Floors.Local.ToBindingList();
+        }
 
 
         // получить данные из таблицы Служащие гостиницы				(Employees)
-        public async Task<List<Employee>> GetEmployeesAsync() => await _data.Employees.Include(e => e.Person).ToListAsync();
+        public static  async Task<List<Employee>> GetEmployeesAsync() => await _data.Employees.Include(e => e.Person).ToListAsync();
+        public static  List<Employee> GetEmployees() => _data.Employees.Include(e => e.Person).ToList();
+
+        // получение списка привязки
+        //public static  BindingList<Employee> GetEmployeesBindingList() 
+        //{ 
+        //    // загрузка данных
+        //    _data.Employees.Include(e => e.Person).Load();
+
+        //    var list = _data.Employees.Local.ToBindingList();
+
+        //    // получаение списка привязки
+        //    return list;
+        //} 
+
+        // получение списка привязки
+        public static BindingList<Employee> GetEmployeesBindingList()
+        {
+            // загрузка данных
+            _data.Employees.Include(e => e.Person).Load();
+
+            return _data.Employees.Local.ToBindingList();
+        }
 
 
         // получить данные из таблицы Клиенты							(Clients)
-        public async Task<List<Client>> GetClientsAsync() => await _data.Clients.Include(c => c.Person).ToListAsync();
+        public static async Task<List<Client>> GetClientsAsync() => await _data.Clients.Include(c => c.Person).ToListAsync();
+        public static List<Client> GetClients() => _data.Clients.Include(c => c.Person).ToList();
+
+        // получение списка привязки
+        public static BindingList<Client> GetClientsBindingList()
+        {
+            // загрузка данных
+            _data.Clients.Include(c => c.Person).Load();
+
+            // получаение списка привязки
+            return _data.Clients.Local.ToBindingList();
+        }
+
+        // получение списка привязки клиентов, которые проживают на данный момент в гостиннице
+        public static List<Client> GetCurrentClients()
+        {
+            // загрузка данных
+            _data.Clients.Include(c => c.Person).Load();
+
+            // данные о действующих регистрациях
+            var reg = GetCurrentHistoryRegistrationHotel();
+
+            // получаение списка привязки
+            return reg.Count == 0 ? new List<Client>() : _data.Clients.Local.Where(c => reg.FirstOrDefault(r => r.Id == c.Id) != null).ToList();
+        }
 
 
         // получить данные из таблицы Персоны							(Persons)
-        public async Task<List<Person>> GetPersonsAsync() => await _data.Persons.ToListAsync();
+        public static async Task<List<Person>> GetPersonsAsync() => await _data.Persons.ToListAsync();
 
+        // получение списка привязки
+        public static BindingList<Person> GetPersonsBindingList()
+        {
+            // загрузка данных
+            _data.Persons.Load();
+
+            // получаение списка привязки
+            return _data.Persons.Local.ToBindingList();
+        }
 
         #endregion
 
@@ -480,7 +822,7 @@ namespace HotelClassLibrary.Controllers
         #region Заполнение базы данных
 
         // генерация данных и заполнение таблиц базы данных 
-        public async Task FillDataBase(DateTime startDate) =>
+        public static async Task FillDataBase(DateTime startDate) =>
             await Task.Run(() =>
             {
                 // очистка таблиц
@@ -490,7 +832,7 @@ namespace HotelClassLibrary.Controllers
                 FillClientsTable(Utils.GetRand(300, 500));
 
                 // заполнение таблицы Служащие гостиницы				(Employees)
-                FillEmployeesTable(Utils.GetRand(10, 20));
+                FillEmployeesTable(Utils.GetRand(5, 8));
 
                 // заполнение таблицы Типы номеров					    (TypesHotelRoom)
                 FillTypesHotelRoomTable();
@@ -499,7 +841,7 @@ namespace HotelClassLibrary.Controllers
                 FillFloorsTable(Utils.GetRand(3, 6));
 
                 // заполнение таблицы Номера гостиницы				    (HotelRooms)
-                FillHotelRoomsTable(Utils.GetRand(10, 20), Utils.GetRand(20, 40), Utils.GetRand(10, 40));
+                FillHotelRoomsTable(Utils.GetRand(5, 11) * 10);
 
                 // заполнение таблицы Города							(Cities)
                 FillCitiesTable();
@@ -519,7 +861,7 @@ namespace HotelClassLibrary.Controllers
 
 
         // очистка таблиц
-        public void ClearTables()
+        public static void ClearTables()
         {
             // удаление записей
             RemoveRangeTable(_data.CleaningSchedule);
@@ -536,7 +878,7 @@ namespace HotelClassLibrary.Controllers
         }
 
         // удаление записей из таблицы
-        public void RemoveRangeTable<T>(DbSet<T> dbSet) where T: class 
+        public static void RemoveRangeTable<T>(DbSet<T> dbSet) where T: class 
         {
             // удаление данных из таблиц
             var list = dbSet.ToList();
@@ -554,7 +896,7 @@ namespace HotelClassLibrary.Controllers
 
 
         // заполнение таблицы Персоны							(Persons)
-        public void FillPersonsTable(int n = 40)
+        public static void FillPersonsTable(int n = 40)
         {
             // генерация списка персон
             List<Person> persons = Enumerable.Repeat(new Person(), n)
@@ -570,7 +912,7 @@ namespace HotelClassLibrary.Controllers
 
 
         // заполнение таблицы Клиенты							(Clients)
-        public void FillClientsTable(int n = 15)
+        public static void FillClientsTable(int n = 15)
         {
             // генерация списка клиентов
             List<Client> clients = Enumerable.Repeat(new Client(), n)
@@ -590,7 +932,7 @@ namespace HotelClassLibrary.Controllers
 
 
         // заполнение таблицы Служащие гостиницы				(Employees)
-        public void FillEmployeesTable(int n = 15)
+        public static void FillEmployeesTable(int n = 15)
         {
             // генерация списка служащих
             List<Employee> employees = Enumerable.Repeat(new Employee(), n)
@@ -609,7 +951,7 @@ namespace HotelClassLibrary.Controllers
 
 
         // заполнение таблицы Типы номеров					    (TypesHotelRoom)
-        public void FillTypesHotelRoomTable()
+        public static void FillTypesHotelRoomTable()
         {
             // добавление записей в таблицу
             _data.TypesHotelRoom.AddRange(Utils.TypesHotelRoom);
@@ -620,7 +962,7 @@ namespace HotelClassLibrary.Controllers
 
 
         // заполнение таблицы Этажи                             (Floors)
-        public void FillFloorsTable(int countFloors = 4)
+        public static  void FillFloorsTable(int countFloors = 4)
         {
             // номер этажа
             int number = 1;
@@ -634,36 +976,45 @@ namespace HotelClassLibrary.Controllers
 
 
         // заполнение таблицы Номера гостиницы				    (HotelRooms)
-        public void FillHotelRoomsTable(int singleRooms, int doubleRooms, int tripleRooms)
+        public static void FillHotelRoomsTable(int countRooms)
         {
             // гостиничные номера
             List<HotelRoom> rooms = new List<HotelRoom>();
 
-            // номер гостиничного номера
-            int number = 1;
-
-            // массив с количеством номеров
-            int[] countRooms = new[] { singleRooms, doubleRooms, tripleRooms };
-
             // список этажей
             List<Floor> floors = _data.Floors.ToList();
 
-            // тип номера
-            TypeHotelRoom type;
+            // типы номеров
+            List<TypeHotelRoom> types = _data.TypesHotelRoom.ToList();
+
+            // среднее количество номеров на этаж
+            int avg = countRooms / floors.Count;
+
+            // количество номеров на последнем этаже
+            int last = countRooms - avg * (floors.Count - 1);
+
+            int floorsCount = floors.Count;
 
             // генерация номеров
-            for (int i = 0; i < countRooms.Length; i++)
+            for (int i = 0; i < floorsCount; i++)
             {
-                type = _data.TypesHotelRoom.ToList().ElementAt(i);
+                // этаж
+                Floor floor = floors[i];
 
-                // генерация одноместных номеров
-                rooms.AddRange(Enumerable.Repeat(0, countRooms[i]).Select(h => new HotelRoom
+                for (int k = 1, number; i < floorsCount - 1 && k <= avg || i == floorsCount - 1 && k % last != 0; k++)
                 {
-                    Floor = floors[Utils.GetRand(0, floors.Count)],
-                    Number = number,
-                    TypeHotelRoom = type,
-                    PhoneNumber = (80000 + number++).ToString()
-                }));
+                    // номер комнаты
+                    number = (i + 1) * 100 + k;
+
+                    // добавление комнаты
+                    rooms.Add(new HotelRoom
+                    {
+                        Floor = floor,
+                        Number = number,
+                        TypeHotelRoom = types[Utils.GetRand(0, types.Count)],
+                        PhoneNumber = (80000 + number++).ToString()
+                    });
+                }
             }
 
             // добавление номеров в таблицу
@@ -675,7 +1026,7 @@ namespace HotelClassLibrary.Controllers
 
 
         // заполнение таблицы Города							(Cities)
-        public void FillCitiesTable()
+        public static  void FillCitiesTable()
         {
             // заполнение таблицы городов
             _data.Cities.AddRange(Utils.Cities.Select(c => new City { Name = c }));
@@ -686,7 +1037,7 @@ namespace HotelClassLibrary.Controllers
 
 
         // заполнение таблицы История поселений в гостиницу	    (HistoryRegistrationHotel)
-        public void FillHistoryRegistrationHotelTable(DateTime startDate, int n = 80)
+        public static  void FillHistoryRegistrationHotelTable(DateTime startDate, int n = 80)
         {
             // список клиентов в таблице клиентов
             List<Client> clients = _data.Clients.ToList();
@@ -721,7 +1072,7 @@ namespace HotelClassLibrary.Controllers
 
 
         // получить свободную комнату
-        private HotelRoom GetRoom()
+        private static HotelRoom GetRoom()
         {
             // комнаты
             List<HotelRoom> list = _data.HotelRooms.ToList();
@@ -742,7 +1093,7 @@ namespace HotelClassLibrary.Controllers
 
 
         // заполнение таблицы Дни недели						(DaysOfWeek)
-        public void FillDaysOfWeekTable()
+        public static void FillDaysOfWeekTable()
         {
             // номер дня
             int number = 1;
@@ -756,7 +1107,7 @@ namespace HotelClassLibrary.Controllers
 
 
         // заполнение таблицы График уборки					    (CleaningSchedule)
-        public void FillCleaningSchedule()
+        public static  void FillCleaningSchedule()
         {
             // дни недели
             List<Models.DayOfWeek> days = _data.DaysOfWeek.ToList();
@@ -767,29 +1118,64 @@ namespace HotelClassLibrary.Controllers
             // этажи
             List<Floor> floors = _data.Floors.ToList();
 
-            // рабочие
-            List<Employee> employees = _data.Employees.ToList();
-
             // заполнение таблицы по дням
+            //for (int i = 0, k = 0; i < days.Count; i++, k = 0)
+            //    cleanings.AddRange(Enumerable.Repeat(0, _data.Floors.Count())
+            //                                 .Select(f => new CleaningSchedule
+            //                                 {
+            //                                     DayOfWeek = days[i],
+            //                                     Floor = floors[k++],
+            //                                     Employee = GetEmployeeEmptyDay(i)
+            //                                 }));
+
+            // количество этажей
+            int count = _data.Floors.Count();
+
             for (int i = 0, k = 0; i < days.Count; i++, k = 0)
-                cleanings.AddRange(Enumerable.Repeat(0, _data.Floors.Count())
-                                             .Select(f => new CleaningSchedule
-                                             {
-                                                 DayOfWeek = days[i],
-                                                 Floor = floors[k++],
-                                                 Employee = employees[Utils.GetRand(0, employees.Count)]
-                                             }));
+            {
+                for (; k < count; k++)
+                {
+                    // заполнение таблицы графика уборки
+                    _data.CleaningSchedule.Add(new CleaningSchedule
+                    {
+                        DayOfWeek = days[i],
+                        Floor = floors[k],
+                        Employee = GetEmployeeEmptyDay(days[i].Number)
+                    });
+
+                    // запись в базу данных
+                    _data.SaveChanges();
+                }
+            }
 
             // заполнение таблицы графика уборки
-            _data.CleaningSchedule.AddRange(cleanings);
+            //_data.CleaningSchedule.AddRange(cleanings);
 
             // запись в базу данных
             _data.SaveChanges();
         }
 
 
+        // получить коллекцию рабочих, которые не работают в выбранный день
+        public static List<Employee> GetEmployeesListEmptyDay(int day) => 
+            _data.Employees.Where(e => !e.IsDeleted)
+                           .ToArray()
+                           .Where(e => _data.CleaningSchedule.Where(c => c.Employee.Id == e.Id && c.DayOfWeek.Number == day)
+                                                             .ToArray().Length == 0)
+                           .ToList();
+        
+
+        // получить рабочего, который не работает в выбранный день
+        public static Employee GetEmployeeEmptyDay(int day)
+        {
+            List<Employee> employees = GetEmployeesListEmptyDay(day);
+
+            return employees[Utils.GetRand(0, employees.Count)];
+        }
+
+
         // заполнение таблицы История фактов уборки			    (CleaningHistory)
-        public void FillCleaningHistoryTable(DateTime startDate)
+        public static  void FillCleaningHistoryTable(DateTime startDate)
         {
             // список графика уборки
             List<CleaningSchedule> schedules = _data.CleaningSchedule.ToList();

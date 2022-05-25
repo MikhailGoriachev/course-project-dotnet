@@ -189,8 +189,8 @@ namespace HotelClassLibrary.Utilities
 
 
         // дни недели
-        public static string[] DaysOfWeek = new[] { "Воскресенье", "Понедельник", "Вторник", "Среда",
-                                                    "Четверг", "Пятница", "Суббота"
+        public static string[] DaysOfWeek = new[] { "Понедельник", "Вторник", "Среда",
+                                                    "Четверг", "Пятница", "Суббота", "Воскресенье"
                                                   };
 
         #endregion

@@ -8,13 +8,16 @@ using System.Threading.Tasks;
 
 namespace HotelApplication.Core
 {
-    public class ObservableObject : INotifyPropertyChanged
-    {
-        public event PropertyChangedEventHandler PropertyChanged;
+    //// Класс Событийный объект
+    //public class ObservableObject : INotifyPropertyChanged
+    //{
+    //    // событие изменения объекта
+    //    public event PropertyChangedEventHandler PropertyChanged;
 
-        protected void OnPropertyChanged([CallerMemberName] string name = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-        }
-    }
+    //    // изменение объекта
+    //    protected void OnPropertyChanged([CallerMemberName] string name = null)
+    //    {
+    //        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+    //    }
+    //}
 }

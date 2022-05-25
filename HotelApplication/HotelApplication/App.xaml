@@ -2,8 +2,56 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:HotelApplication"
+             xmlns:viewModel="clr-namespace:HotelApplication.MVVM.ViewModel"
+             xmlns:view="clr-namespace:HotelApplication.MVVM.View"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        
+        <!--#region Словарь ресурсов -->
+        <ResourceDictionary>
+            
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Theme/MenuButtonTheme.xaml"/>
+                <ResourceDictionary Source="Theme/TextBoxTheme.xaml"/>
+                <ResourceDictionary Source="Theme/Icons.xaml"/>
+                <ResourceDictionary Source="Theme/Buttons.xaml"/>
+                <ResourceDictionary Source="Theme/DataGridTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+            <DataTemplate DataType="{x:Type viewModel:HomeViewModel}">
+                <view:HomeView/>
+            </DataTemplate>
+            
+            <DataTemplate DataType="{x:Type viewModel:EmployeesManagementViewModel}">
+                <view:EmployeesView/>
+            </DataTemplate>
+            
+            <DataTemplate DataType="{x:Type viewModel:ClientsManagementViewModel}">
+                <view:ClientsManagementView/>
+            </DataTemplate>
+            
+            <DataTemplate DataType="{x:Type viewModel:RegistrationHotelManagementViewModel}">
+                <view:RegistrationHotelView/>
+            </DataTemplate>
+            
+            <DataTemplate DataType="{x:Type viewModel:EvictClientViewModel}">
+                <view:EvictClientView/>
+            </DataTemplate>
+            
+            <DataTemplate DataType="{x:Type viewModel:RoomsManagementViewModel}">
+                <view:RoomsManagementView/>
+            </DataTemplate>
+            
+            <DataTemplate DataType="{x:Type viewModel:RoomViewModel}">
+                <view:RoomView/>
+            </DataTemplate>
+            
+            <DataTemplate DataType="{x:Type viewModel:CleaningRoomClientDateViewModel}">
+                <view:CleaningRoomClientDateView/>
+            </DataTemplate>
+            
+        </ResourceDictionary>
+        <!--#endregion-->
+        
     </Application.Resources>
 </Application>

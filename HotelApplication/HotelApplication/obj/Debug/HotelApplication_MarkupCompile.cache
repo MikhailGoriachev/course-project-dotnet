@@ -10,11 +10,11 @@ none
 false
 DEBUG;TRACE
 D:\01. Programming\00. Курсовые проекты\01. Курсовой проект .NET Framework\HotelApplication\HotelApplication\App.xaml
-1219584333
-
-51579654133
-13-38814620
-MainWindow.xaml;
+18136358722
+18386445388
+311910244092
+191232043653
+MainWindow.xaml;MVVM\View\CityWindow.xaml;MVVM\View\CleaningRoomClientDateView.xaml;MVVM\View\ClientsManagementView.xaml;MVVM\View\ClientWindow.xaml;MVVM\View\EmployeesManagementView.xaml;MVVM\View\EmployeeWindow.xaml;MVVM\View\EvictClientView.xaml;MVVM\View\HomeView.xaml;MVVM\View\RegistrationHotelManagementView.xaml;MVVM\View\RegistrationHotelView.xaml;MVVM\View\RoomsManagementView.xaml;MVVM\View\RoomView.xaml;Theme\Buttons.xaml;Theme\DataGridTheme.xaml;Theme\Icons.xaml;Theme\MenuButtonTheme.xaml;Theme\TextBoxTheme.xaml;
 
 False
 

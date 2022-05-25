@@ -5,97 +5,140 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:HotelApplication"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        xmlns:viewModel="clr-namespace:HotelApplication.MVVM.ViewModel"
+        xmlns:view="clr-namespace:HotelApplication.MVVM.View"
         mc:Ignorable="d"
-        Title="Управление отелем" Height="450" Width="800"
-        WindowStartupLocation="CenterScreen">
-    <Window.Resources>
-        
-        <!--
-            Цветовая палитра
-            темно синий         - #0C245F
-            темно фиолетовый    - #7411EC
-        
-        -->
-        
-        <!--#region Размеры -->
-        
-        <!-- Верхняя строка -->
-        <sys:Double x:Key="HeaderHight">40</sys:Double>
+        Title="Управление отелем" 
+        Height="600" Width="1000"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
+        Background="Transparent"
+        AllowsTransparency="True"
+        AllowDrop="True">
 
-        <!-- Левый толбец -->
-        <sys:Double x:Key="LeftNavWidth">60</sys:Double>
+    <Window.DataContext>
+        <viewModel:MainViewModel/>
+    </Window.DataContext>
 
-        <!--#endregion-->
-        
-        <!--#region Шрифт -->
-        <Style x:Key="Font">
-            <Style.Setters>
-                <Setter Property="Control.FontSize" Value="14"/>
-                <Setter Property="Control.FontFamily" Value="Verdana"/>
-            </Style.Setters>
-        </Style>
-        <!--#endregion-->
-        
-        <!--#region Стиль верхнего меню -->
-        <Style x:Key="HeaderMenuStyle" TargetType="Menu">
-            <Style.Setters>
-                <Setter Property="Grid.Row" Value="0"/>
-                <Setter Property="Grid.Column" Value="1"/>
-                <Setter Property="Background" Value="#0C245F"/>
-                <Setter Property="FontWeight" Value="Normal"/>
-                <Setter Property="Foreground" Value="#fff"/>
-                <Setter Property="VerticalContentAlignment" Value="Stretch"/>
-            </Style.Setters>
-        </Style>
-        <!--#endregion-->
-
-        <!--#region Стиль элементов верхнего меню -->
-        <Style x:Key="HeaderMenuItem" TargetType="MenuItem">
-            <Style.Setters>
-                <Setter Property="Height" Value="{DynamicResource HeaderHight}"/>
-                <Setter Property="Foreground" Value="#fff"/>
-            </Style.Setters>
-        </Style>
-        <!--#endregion-->
+    <Border Background="#272537"
+            CornerRadius="20">
+        <Grid>
+            <!-- Столбцы -->
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="200"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
             
-        <!--#region Стиль логотипа в верхнем левом углу -->
-        <Style x:Name="LogoHeader" TargetType="Label">
-            <Setter Property="Height" Value="{DynamicResource HeaderHight}"/>
-            <Setter Property="Width" Value="{DynamicResource LeftNavWidth}"/>
-            <Setter Property="Foreground" Value="#fff"/>
-            <Setter Property="Background" Value="#7411EC"/>
-            <Setter Property="Grid.Row" Value="0"/>
-            <Setter Property="Grid.Column" Value="0"/>
-            <Setter Property="FontSize" Value="30"/>
-        </Style>
-        <!--#endregion-->
-        
-        
-    </Window.Resources>
-    
-    <Grid>
-        <!-- Столбцы -->
-        <Grid.ColumnDefinitions>
-            <!--<ColumnDefinition Width="{DynamicResource LeftNavWidth}"/>-->
-            <ColumnDefinition x:Name="FirstColumn" Width="60"/>
-            <ColumnDefinition/>
-        </Grid.ColumnDefinitions>
-        
-        <!-- Строки -->
-        <Grid.RowDefinitions>
-            <RowDefinition Height="{Binding Source={StaticResource HeaderHight}}"/>
-            <!--<RowDefinition Height="40"/>-->
-            <RowDefinition/>
-        </Grid.RowDefinitions>
-        
-        <!-- Логотип -->
-        <Label Style="{DynamicResource LogoHeader}"
-               Content="Привет Мир!">
-        </Label>
+            <!--Строки-->
+            <Grid.RowDefinitions>
+                <RowDefinition Height="75"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            
+            <!-- Прямоугольник для перетаскивания окна -->
+            <Rectangle Fill="Transparent"
+                           Grid.ColumnSpan="2" 
+                           PreviewMouseDown="Rectangle_MouseEnter"></Rectangle>
+            
+            <!-- Заголовок окна -->
+            <TextBlock Text="Hotel Management"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Center"
+                       Foreground="White"
+                       FontSize="20"
+                       Margin="20 0 0 0"/>
 
-        <!-- Меню -->
-        <Menu Style="{DynamicResource HeaderMenuStyle}">
-            <MenuItem Style="{DynamicResource HeaderMenuItem}" Header="Привет мир!"></MenuItem>
-        </Menu>
-    </Grid>
+            <!--#region Меню -->
+            <StackPanel Grid.Row="1">
+                
+                <!-- Главная -->
+                <RadioButton Content="Главная"
+                             Style="{DynamicResource MenuButtonTheme}"
+                             IsChecked="True"
+                             Command="{Binding HomeViewCommand}"/>
+                
+                <!-- Служащие гостиницы -->
+                <RadioButton Content="Служащие гостиницы"
+                             Style="{DynamicResource MenuButtonTheme}"
+                             Command="{Binding EmloyeesViewCommand}"/>
+                
+                <!-- Клиенты -->
+                <RadioButton Content="Клиенты"
+                             Style="{DynamicResource MenuButtonTheme}"
+                             Command="{Binding ClientsViewCommand}"/>
+                
+                <!-- Регистрация клиентов -->
+                <RadioButton Content="Регистрация клиентов"
+                             Style="{DynamicResource MenuButtonTheme}"
+                             Command="{Binding RegistrationHotelViewCommand}"/>
+
+                <!-- Номера гостиницы -->
+                <RadioButton Content="Номера гостиницы"
+                             Style="{DynamicResource MenuButtonTheme}"
+                             Command="{Binding RoomsHotelViewCommand}"/>
+
+                <!-- Просмотр данных -->
+                <RadioButton Content="Просмотр данных"
+                             Style="{DynamicResource MenuButtonTheme}"/>
+
+            </StackPanel>
+            <!--#endregion-->
+
+            <!--#region Верхняя часть упраления -->
+            <Grid Grid.Column="1" Grid.Row="0">
+                <!-- столбцы -->
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                
+
+                <!-- Поиск по приложению -->
+                <TextBox Width="250"
+                         Height="40"
+                         VerticalContentAlignment="Center"
+                         HorizontalAlignment="Left"
+                         Margin="5"
+                         Style="{DynamicResource ModernTextBox}"/>
+
+                <!-- Кнопки управления -->
+                <StackPanel Grid.Column="1" 
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Top">
+                
+                    <!-- свернуть приложение -->
+                    <Button Command="{Binding CollapseCommand}"
+                            Template="{DynamicResource ButtonControlTransparent}"
+                            Margin="0 15 0 0"
+                            Style="{x:Null}">
+                        <Path Stretch="Uniform" Fill="{DynamicResource FillPath}" Data="{DynamicResource icon_collapse_white}"/>
+                    </Button>
+                
+                    <!-- Развернуть на весь экран/свернуть -->
+                    <Button Command="{Binding FullScreenCommand}"
+                            Template="{DynamicResource ButtonControlTransparent}"
+                            Margin="0 15 0 0"
+                            Style="{x:Null}">
+                        <Path Stretch="Uniform" Fill="{DynamicResource FillPath}" Data="{DynamicResource icon_fullscreen_white}"/>
+                    </Button>
+                
+                    <!-- Закрыть приложение -->
+                    <Button Command="{Binding ExitCommand}"
+                            Margin="0 15 15 0"
+                            Template="{DynamicResource ButtonControlTransparent}"
+                            Style="{x:Null}">
+                        <Path Stretch="Uniform" Fill="{DynamicResource FillPath}" Data="{DynamicResource icon_close_white}"/>
+                    </Button>
+                </StackPanel>
+            </Grid>
+            <!--#endregion-->
+
+            <!-- Контент окна -->
+            <ContentControl Margin="20" Grid.Row="1" Grid.Column="1"
+                            Content="{Binding CurrentView}"/>
+        </Grid>
+    </Border>
+
 </Window>

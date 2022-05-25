@@ -73,6 +73,7 @@
     <Compile Include="Context\Configuration\HotelInitializer.cs" />
     <Compile Include="Controllers\HotelController.cs" />
     <Compile Include="Context\HotelDB.cs" />
+    <Compile Include="Core\ObservableObject.cs" />
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\City.cs" />
     <Compile Include="Models\CleaningHistory.cs" />
