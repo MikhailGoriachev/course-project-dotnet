@@ -29,11 +29,11 @@ namespace HotelApplication.MVVM.View
         }
 
 
-        public RoomView(HotelRoom room, Models.WindowState windowState)
+        public RoomView(HotelRoom room)
         {
             InitializeComponent();
 
-            this.DataContext = new RoomViewModel(room, windowState);
+            this.DataContext = new RoomViewModel(room);
         }
 
 

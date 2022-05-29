@@ -1,0 +1,194 @@
+﻿<UserControl x:Class="HotelApplication.MVVM.View.ReportView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:HotelApplication.MVVM.View"
+             mc:Ignorable="d" 
+             xmlns:conv="clr-namespace:HotelApplication.Converters"
+             xmlns:model="clr-namespace:HotelClassLibrary.Models;assembly=HotelClassLibrary"
+             xmlns:vm="clr-namespace:HotelApplication.MVVM.ViewModel"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             d:DesignHeight="450" d:DesignWidth="800">
+
+    <!-- DataContext -->
+    <UserControl.DataContext>
+        <vm:ReportViewModel/>
+    </UserControl.DataContext>
+
+
+    <!-- Ресурсы окна -->
+    <UserControl.Resources>
+
+        <!-- Конвертер, который возвращает строковое представление даты -->
+        <conv:DateConverter x:Key="DateConverter"/>
+
+        <!-- Стиль Label -->
+        <Style TargetType="Label">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+
+        <!-- Стиль ComboBox -->
+        <Style TargetType="ComboBox">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Margin" Value="20 0"/>
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Foreground" Value="Black"/>
+        </Style>
+
+        <!-- Стиль TextBox -->
+        <Style TargetType="TextBox">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="Margin" Value="20 0"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="5 0 0 0"/>
+        </Style>
+
+    </UserControl.Resources>
+
+
+    <ScrollViewer>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="250"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Заголовок страницы -->
+            <TextBlock Text="Отчёт"
+                   Foreground="White"
+                   FontSize="28"
+                   HorizontalAlignment="Left"
+                   Margin="0 0 0 20"/>
+
+            <!-- Начальная дата -->
+            <StackPanel Grid.Column="0" Grid.Row="1" Grid.RowSpan="3" 
+                    Orientation="Vertical"
+                    HorizontalAlignment="Center">
+
+                <!-- Заголовок -->
+                <Label Content="Начальная дата"
+                               HorizontalAlignment="Center"
+                               FontSize="18"/>
+
+                <!-- Календарь -->
+                <Calendar SelectedDate="{Binding StartDate}"/>
+
+            </StackPanel>
+
+            <!-- Конечная дата -->
+            <StackPanel Grid.Column="1" Grid.Row="1" Grid.RowSpan="3" 
+                    Orientation="Vertical"
+                    HorizontalAlignment="Center">
+
+                <!-- Заголовок -->
+                <Label Content="Конечная дата"
+                   HorizontalAlignment="Center"
+                   FontSize="18"/>
+
+                <!-- Календарь -->
+                <Calendar SelectedDate="{Binding EndDate}"/>
+
+            </StackPanel>
+
+            <!-- Кнопка Получить отчёт -->
+            <Button Grid.Row="2" Grid.ColumnSpan="2" Name="BtnOK" Content="Получить отчёт"
+                        Background="#4EFF91"
+                        Margin="20"
+                        Command="{Binding ResultReportCommand}"/>
+            
+
+            <!-- Заголовок страницы -->
+            <TextBlock Grid.Row="3" Grid.ColumnSpan="2" Text="Данные"
+                       Foreground="White"
+                       FontSize="28"
+                       HorizontalAlignment="Center"
+                       Margin="0 0 0 20"/>
+
+            <!-- Данные отчёта -->
+            <StackPanel Grid.ColumnSpan="2" Grid.Row="4">
+
+                <!-- Начальная дата -->
+                <StackPanel Orientation="Horizontal"
+                            HorizontalAlignment="Left">
+                    <Label Content="Начальная дата:"/>
+                    <Label Content="{Binding Report.StartDate, Converter={StaticResource DateConverter}}"/>
+                </StackPanel>
+
+                <!-- Конечная дата -->
+                <StackPanel Orientation="Horizontal"
+                            HorizontalAlignment="Left">
+                    <Label Content="Конечная дата:"/>
+                    <Label Content="{Binding Report.EndDate, Converter={StaticResource DateConverter}}"/>
+                </StackPanel>
+
+                <!-- Число клиентов -->
+                <StackPanel Orientation="Horizontal"
+                            HorizontalAlignment="Left">
+                    <Label Content="Число клиентов:"/>
+                    <Label Content="{Binding Report.CountClients}"/>
+                </StackPanel>
+
+                <!-- Общая сумма дохода -->
+                <StackPanel Orientation="Horizontal"
+                            HorizontalAlignment="Left">
+                    <Label Content="Общая сумма дохода:"/>
+                    <Label Content="{Binding Report.Account}"/>
+                </StackPanel>
+
+
+                <!-- Статистика номеров -->
+                <Label Content="Статистика номеров"
+                       FontSize="18"
+                       HorizontalAlignment="Center"/>
+                
+                <!--#region Таблица с данными -->
+                <DataGrid Margin="20" ItemsSource="{Binding Report.ResultRooms}"
+                              AutoGenerateColumns="False"
+                              AlternationCount="2"
+                              Height="400"
+                              RowHeaderWidth="0"
+                              IsReadOnly="True"
+                              HorizontalAlignment="Left"
+                              SelectionMode="Single"
+                              Background="Transparent"
+                              CanUserSortColumns="False">
+
+                    <!--#region Заголовки таблицы-->
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Этаж" Binding="{Binding Room.Floor.Number}" Width="20*"/>
+                        <DataGridTextColumn Header="Номер комнаты" Binding="{Binding Room.Number}" Width="20*"/>
+                        <DataGridTextColumn Header="Тип номера" Binding="{Binding Room.TypeHotelRoom.Name}" Width="20*"/>
+                        <DataGridTextColumn Header="Стоимость (сутки)" Binding="{Binding Room.TypeHotelRoom.Price}" Width="20*"/>
+                        <DataGridTextColumn Header="Номер телефона" Binding="{Binding Room.PhoneNumber}" Width="20*"/>
+                        <DataGridTextColumn Header="Занят (дней)" Binding="{Binding BusyDays}" Width="20*"/>
+                        <DataGridTextColumn Header="Свободен (дней)" Binding="{Binding EmptyDays}" Width="20*"/>
+                    </DataGrid.Columns>
+                    <!--#endregion-->
+
+                </DataGrid>
+                <!--#endregion-->
+
+            </StackPanel>
+
+        </Grid>
+    </ScrollViewer>
+</UserControl>

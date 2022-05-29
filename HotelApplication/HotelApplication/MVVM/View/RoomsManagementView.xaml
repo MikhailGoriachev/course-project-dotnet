@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:HotelApplication.MVVM.View"
              xmlns:conv="clr-namespace:HotelApplication.Converters"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:model="clr-namespace:HotelApplication.MVVM.ViewModel"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
@@ -24,23 +25,56 @@
         <!-- конвертер возвращает строковое мест (занято/всего) комнаты -->
         <conv:HotelRoomPlaceToString x:Key="HotelRoomPlaceToString"/>
 
+        <!-- Стиль CheckBox -->
+        <Style TargetType="CheckBox">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Margin" Value="18 0"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Height" Value="30"/>
+        </Style>
+
     </UserControl.Resources>
 
 
     <!--#region Контент страницы -->
     <StackPanel>
 
-        <!-- Заголовок -->
-        <TextBlock Text="Управление номерами"
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+
+            <!-- Заголовок -->
+            <TextBlock Text="Управление номерами"
                        Foreground="White"
                        FontSize="28"
                        HorizontalAlignment="Left"
                        Margin="0 0 0 20"/>
 
+            <!-- Только свободные номера -->
+            <CheckBox Grid.Column="1" Name="CbxIsSelectionByCity" 
+                      Content="Только свободные номера:"
+                      FontSize="16"
+                      IsChecked="{Binding IsSelectionByEmpty}">
+                
+                <!-- Обработка события -->
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="Click">
+                        <i:InvokeCommandAction Command="{Binding SelectionByEmptyCommand}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+
+            </CheckBox>
+
+        </Grid>
+
         <!--#region Инфрмационный блок -->
         <StackPanel Orientation="Horizontal">
             <Border Width="250"
-                    Height="50"
+                    
                     CornerRadius="10">
 
                 <!--#region Фон -->
@@ -52,20 +86,20 @@
                 </Border.Background>
                 <!--#endregion-->
 
-                <!--#region Контент -->
+                    <!-- Всего номеров -->
                 <StackPanel Orientation="Horizontal" 
-                                VerticalAlignment="Center"
-                                Margin="20 0">
+                            VerticalAlignment="Center"
+                            Margin="20 0">
 
-                    <TextBlock Text="Всего номеров: "
+                    <TextBlock Text="Количество номеров: "
                                Foreground="White"
                                FontSize="18"/>
 
                     <TextBlock Text="{Binding CountRooms}"
-                                       Foreground="White"
-                                       FontSize="18"/>
+                               Foreground="White"
+                               FontSize="18"/>
                 </StackPanel>
-                <!--#endregion-->
+
             </Border>
 
             <!-- Добавить клиента в номер -->
@@ -74,8 +108,8 @@
                         Margin="20 0 10 0"
                         Background="#4EFF91"/>
 
-            <!-- Выселить клиента из номера -->
-            <Button Content="Выселить клиента" Width="150"
+            <!-- Клиенты номера -->
+            <Button Content="Клиенты номера" Width="150"
                         Command="{Binding EvictClientRoomCommand}"
                         Margin="10 0"
                         Background="#ECFF4E"/>
@@ -89,8 +123,8 @@
         </StackPanel>
         <!--#endregion-->
 
-        <!--#region Таблица с данными рабочих -->
-        <DataGrid Margin="0 20" ItemsSource="{Binding Rooms}"
+        <!--#region Таблица с данными -->
+        <DataGrid Margin="0 20" ItemsSource="{Binding SelectedRoomsList}"
                   AutoGenerateColumns="False"
                   AlternationCount="2"
                   Height="{Binding ElementName=ControlUser, Path=ActualHeight, Converter={StaticResource DoubleSubtractionConverter}, ConverterParameter=150}"
@@ -120,8 +154,8 @@
                     <!-- Добавить клиента в номер -->
                     <MenuItem Header="Добавить клиента"
                               Command="{Binding AddClientRoomCommand}"/>
-                    <!-- Выселить клиента из номера -->
-                    <MenuItem Header="Выселить клиента"
+                    <!-- Клиенты номера -->
+                    <MenuItem Header="Клиенты номера"
                               Command="{Binding EvictClientRoomCommand}"/>
                
                 </ContextMenu>

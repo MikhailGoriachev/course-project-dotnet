@@ -50,6 +50,10 @@
                 <view:CleaningRoomClientDateView/>
             </DataTemplate>
             
+            <DataTemplate DataType="{x:Type viewModel:ReportViewModel}">
+                <view:ReportView/>
+            </DataTemplate>
+            
         </ResourceDictionary>
         <!--#endregion-->
         

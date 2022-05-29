@@ -1,5 +1,4 @@
-﻿using HotelApplication.Core;
-using HotelApplication.Models;
+﻿using HotelApplication.Models;
 using HotelApplication.MVVM.View;
 using HotelClassLibrary.Controllers;
 using HotelClassLibrary.Models;
@@ -41,7 +40,7 @@ namespace HotelApplication.MVVM.ViewModel
 
 
         // список номеров
-        public List<HotelRoom> Rooms => HotelController.GetHotelRoomsBindingList().Where(r => HotelController.CountBusyPlace(r, DateTime.Now.Date) < r.TypeHotelRoom.CountPlace).ToList();
+        public List<HotelRoom> Rooms { get; set; } 
 
 
         // список этажей
@@ -80,6 +79,9 @@ namespace HotelApplication.MVVM.ViewModel
 
             // клиенты
             CurrentClientsList = Clients.ToList();
+
+            // заполнение списка номеров номерами, которые не заполнены до конца
+            Rooms = HotelController.GetHotelRoomsBindingList().Where(r => HotelController.CountBusyPlace(r, DateTime.Now.Date) < r.TypeHotelRoom.CountPlace).ToList();
         }
 
 
@@ -102,6 +104,9 @@ namespace HotelApplication.MVVM.ViewModel
             };
 
             CurrentFloor = CurrentRegistration.HotelRoom.Floor;
+
+            // заполнение списка номеров номерами, которые не заполнены до конца, также добавляется запись текущего клиента
+            Rooms = HotelController.GetHotelRoomsBindingList().Where(r => CurrentRegistration.HotelRoom.Id == r.Id || HotelController.CountBusyPlace(r, DateTime.Now.Date) < r.TypeHotelRoom.CountPlace).ToList();
 
             // выборка номеров гостиницы по этажу
             FloorRooms = Rooms.Where(r => r.Floor.Id == CurrentRegistration.HotelRoom.Floor.Id).ToList();

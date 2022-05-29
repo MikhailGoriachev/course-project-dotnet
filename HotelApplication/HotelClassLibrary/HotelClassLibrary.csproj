@@ -55,6 +55,7 @@
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.4.4\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationCore" />
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
@@ -73,7 +74,6 @@
     <Compile Include="Context\Configuration\HotelInitializer.cs" />
     <Compile Include="Controllers\HotelController.cs" />
     <Compile Include="Context\HotelDB.cs" />
-    <Compile Include="Core\ObservableObject.cs" />
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\City.cs" />
     <Compile Include="Models\CleaningHistory.cs" />
@@ -83,8 +83,11 @@
     <Compile Include="Models\Employee.cs" />
     <Compile Include="Models\Floor.cs" />
     <Compile Include="Models\HistoryRegistrationHotel.cs" />
+    <Compile Include="Models\HotelRoomReport.cs" />
     <Compile Include="Models\HotelRoom.cs" />
+    <Compile Include="Models\ObservableObject.cs" />
     <Compile Include="Models\Person.cs" />
+    <Compile Include="Models\RelayCommand.cs" />
     <Compile Include="Models\Report.cs" />
     <Compile Include="Models\TypeHotelRoom.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

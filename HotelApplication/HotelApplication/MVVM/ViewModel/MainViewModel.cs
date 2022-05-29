@@ -1,7 +1,7 @@
-﻿using HotelApplication.Core;
-using HotelApplication.MVVM.View;
+﻿using HotelApplication.MVVM.View;
 using HotelClassLibrary.Context;
 using HotelClassLibrary.Controllers;
+using HotelClassLibrary.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,6 +33,10 @@ namespace HotelApplication.MVVM.ViewModel
         public RoomsManagementViewModel RoomsHotelVM { get; set; }
 
 
+        // модель страницы "Отчёт"
+        public ReportViewModel ReportVM { get; set; }
+
+
         // текущее представление контента
         private object _currentView;
 
@@ -62,6 +66,7 @@ namespace HotelApplication.MVVM.ViewModel
             ClientsVM = new ClientsManagementViewModel();
             RegistrationHotelVM = new RegistrationHotelManagementViewModel();
             RoomsHotelVM = new RoomsManagementViewModel();
+            ReportVM = new ReportViewModel();
 
             // установка текущего окна и страницы
             CurrentView = HomeVM;
@@ -103,6 +108,18 @@ namespace HotelApplication.MVVM.ViewModel
         private RelayCommand _roomsHotelViewCommand;
 
         public RelayCommand RoomsHotelViewCommand => _roomsHotelViewCommand ?? (_roomsHotelViewCommand = new RelayCommand(o => CurrentView = RoomsHotelVM));
+
+
+        // счёт за проживание
+        private RelayCommand _costViewCommand;
+
+        public RelayCommand CostViewCommand => _costViewCommand ?? (_costViewCommand = new RelayCommand(o => new CostRegistrationView().ShowDialog()));
+
+
+        // отчёт
+        private RelayCommand _reportViewCommand;
+
+        public RelayCommand ReportViewCommand => _reportViewCommand ?? (_reportViewCommand = new RelayCommand(o => CurrentView = ReportVM));
 
         #endregion
 

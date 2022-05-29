@@ -83,8 +83,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Converters\Converters.cs" />
-    <Compile Include="Core\ObservableObject.cs" />
-    <Compile Include="Core\RelayCommand.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -102,6 +100,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="MVVM\View\ClientWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MVVM\View\CostRegistrationView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -126,6 +128,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="MVVM\View\RegistrationHotelView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MVVM\View\ReportView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -162,12 +168,14 @@
     <Compile Include="Models\WindowState.cs" />
     <Compile Include="MVVM\ViewModel\CleaningRoomClientDateViewModel.cs" />
     <Compile Include="MVVM\ViewModel\ClientsManagementViewModel.cs" />
+    <Compile Include="MVVM\ViewModel\CostRegistrationViewModel.cs" />
     <Compile Include="MVVM\ViewModel\EmployeesManagementViewModel.cs" />
     <Compile Include="MVVM\ViewModel\EvictClientViewModel.cs" />
     <Compile Include="MVVM\ViewModel\HomeViewModel.cs" />
     <Compile Include="MVVM\ViewModel\MainViewModel.cs" />
     <Compile Include="MVVM\ViewModel\RegistrationHotelManagementViewModel.cs" />
     <Compile Include="MVVM\ViewModel\RegistrationHotelViewModel.cs" />
+    <Compile Include="MVVM\ViewModel\ReportViewModel.cs" />
     <Compile Include="MVVM\ViewModel\RoomsManagementViewModel.cs" />
     <Compile Include="MVVM\ViewModel\RoomViewModel.cs" />
     <Compile Include="MVVM\View\CityWindow.xaml.cs">
@@ -181,6 +189,9 @@
     </Compile>
     <Compile Include="MVVM\View\ClientWindow.xaml.cs">
       <DependentUpon>ClientWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MVVM\View\CostRegistrationView.xaml.cs">
+      <DependentUpon>CostRegistrationView.xaml</DependentUpon>
     </Compile>
     <Compile Include="MVVM\View\EmployeesManagementView.xaml.cs">
       <DependentUpon>EmployeesManagementView.xaml</DependentUpon>
@@ -199,6 +210,9 @@
     </Compile>
     <Compile Include="MVVM\View\RegistrationHotelView.xaml.cs">
       <DependentUpon>RegistrationHotelView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MVVM\View\ReportView.xaml.cs">
+      <DependentUpon>ReportView.xaml</DependentUpon>
     </Compile>
     <Compile Include="MVVM\View\RoomsManagementView.xaml.cs">
       <DependentUpon>RoomsManagementView.xaml</DependentUpon>
@@ -255,6 +269,7 @@
     <Content Include="Images\question_mark_white_48dp.svg" />
     <Content Include="Images\remove_white_48dp.svg" />
     <Content Include="Images\settings_white_48dp.svg" />
+    <Resource Include="Images\World.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

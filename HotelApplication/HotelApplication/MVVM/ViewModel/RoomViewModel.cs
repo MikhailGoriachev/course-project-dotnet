@@ -1,5 +1,4 @@
-﻿using HotelApplication.Core;
-using HotelApplication.Models;
+﻿using HotelApplication.Models;
 using HotelClassLibrary.Controllers;
 using HotelClassLibrary.Models;
 using System;
@@ -76,7 +75,7 @@ namespace HotelApplication.MVVM.ViewModel
 
 
         // конструктор инициализирующий
-        public RoomViewModel(HotelRoom room, WindowState state)
+        public RoomViewModel(HotelRoom room)
         {
             // установка значений
             SelectedRoom = room;
@@ -85,7 +84,7 @@ namespace HotelApplication.MVVM.ViewModel
             SelectedClientsList = Clients.ToList();
             SelectedClient = Clients.FirstOrDefault();
 
-            Header = $"Выселение клиента. Номер: {SelectedRoom.Number}";
+            Header = $"Клиенты номера: {SelectedRoom.Number}";
         }
 
 

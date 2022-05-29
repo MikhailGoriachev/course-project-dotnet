@@ -10,11 +10,11 @@ none
 false
 DEBUG;TRACE
 D:\01. Programming\00. Курсовые проекты\01. Курсовой проект .NET Framework\HotelApplication\HotelApplication\App.xaml
-18136358722
+20-1925382496
 18386445388
-32-462945083
+34-953313337
 191232043653
-MainWindow.xaml;MVVM\View\CityWindow.xaml;MVVM\View\CleaningRoomClientDateView.xaml;MVVM\View\ClientsManagementView.xaml;MVVM\View\ClientWindow.xaml;MVVM\View\EmployeesManagementView.xaml;MVVM\View\EmployeeWindow.xaml;MVVM\View\EvictClientView.xaml;MVVM\View\HomeView.xaml;MVVM\View\RegistrationHotelManagementView.xaml;MVVM\View\RegistrationHotelView.xaml;MVVM\View\RoomsManagementView.xaml;MVVM\View\RoomView.xaml;Theme\Buttons.xaml;Theme\DataGridTheme.xaml;Theme\Icons.xaml;Theme\MenuButtonTheme.xaml;Theme\TextBoxTheme.xaml;
+MainWindow.xaml;MVVM\View\CityWindow.xaml;MVVM\View\CleaningRoomClientDateView.xaml;MVVM\View\ClientsManagementView.xaml;MVVM\View\ClientWindow.xaml;MVVM\View\CostRegistrationView.xaml;MVVM\View\EmployeesManagementView.xaml;MVVM\View\EmployeeWindow.xaml;MVVM\View\EvictClientView.xaml;MVVM\View\HomeView.xaml;MVVM\View\RegistrationHotelManagementView.xaml;MVVM\View\RegistrationHotelView.xaml;MVVM\View\ReportView.xaml;MVVM\View\RoomsManagementView.xaml;MVVM\View\RoomView.xaml;Theme\Buttons.xaml;Theme\DataGridTheme.xaml;Theme\Icons.xaml;Theme\MenuButtonTheme.xaml;Theme\TextBoxTheme.xaml;
 
 False
 

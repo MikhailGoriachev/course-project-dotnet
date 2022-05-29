@@ -21,6 +21,9 @@
         <!-- Конвертер, который отнимает число от значения -->
         <conv:DoubleSubtractionConverter x:Key="DoubleSubtractionConverter"/>
 
+        <!-- Конвертер возвращает "удалён"/"активен" -->
+        <conv:IsDeletedConverter x:Key="IsDeletedConverter"/>
+
     </UserControl.Resources>
 
     <!--#region Контент страницы -->
@@ -107,7 +110,7 @@
                 <DataGridTextColumn Header="Имя" Binding="{Binding Person.Name}" Width="20*"/>
                 <DataGridTextColumn Header="Отчество" Binding="{Binding Person.Patronymic}" Width="20*"/>
                 <DataGridTextColumn Header="Паспорт" Binding="{Binding Passport}" Width="20*"/>
-                <DataGridTextColumn Header="Статус" Binding="{Binding IsDeleted}" Width="20*"/>
+                <DataGridTextColumn Header="Статус" Binding="{Binding IsDeleted, Converter={StaticResource IsDeletedConverter}}" Width="20*"/>
             </DataGrid.Columns>
             <!--#endregion-->
 

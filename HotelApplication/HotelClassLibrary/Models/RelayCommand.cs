@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace HotelApplication.Core
+namespace HotelClassLibrary.Models
 {
     // Класс Команда
     public class RelayCommand : ICommand

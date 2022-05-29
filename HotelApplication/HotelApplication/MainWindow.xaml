@@ -10,6 +10,7 @@
         mc:Ignorable="d"
         Title="Управление отелем" 
         Height="600" Width="1000"
+        Icon="Images\World.png"
         WindowStartupLocation="CenterScreen"
         WindowStyle="None"
         Background="Transparent"
@@ -77,9 +78,15 @@
                              Style="{DynamicResource MenuButtonTheme}"
                              Command="{Binding RoomsHotelViewCommand}"/>
 
-                <!-- Просмотр данных -->
-                <RadioButton Content="Просмотр данных"
-                             Style="{DynamicResource MenuButtonTheme}"/>
+                <!-- Счёт за проживание -->
+                <RadioButton Content="Счёт за проживание"
+                             Style="{DynamicResource MenuButtonTheme}"
+                             Command="{Binding CostViewCommand}"/>
+
+                <!-- Отчёт -->
+                <RadioButton Content="Отчёт"
+                             Style="{DynamicResource MenuButtonTheme}"
+                             Command="{Binding ReportViewCommand}"/>
 
             </StackPanel>
             <!--#endregion-->
@@ -95,12 +102,12 @@
                 
 
                 <!-- Поиск по приложению -->
-                <TextBox Width="250"
+                <!--<TextBox Width="250"
                          Height="40"
                          VerticalContentAlignment="Center"
                          HorizontalAlignment="Left"
                          Margin="5"
-                         Style="{DynamicResource ModernTextBox}"/>
+                         Style="{DynamicResource ModernTextBox}"/>-->
 
                 <!-- Кнопки управления -->
                 <StackPanel Grid.Column="1" 

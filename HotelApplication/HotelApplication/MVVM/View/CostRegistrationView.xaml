@@ -1,0 +1,200 @@
+﻿<Window x:Class="HotelApplication.MVVM.View.CostRegistrationView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:HotelApplication.MVVM.View"
+        xmlns:model="clr-namespace:HotelClassLibrary.Models;assembly=HotelClassLibrary"
+        xmlns:vm="clr-namespace:HotelApplication.MVVM.ViewModel"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        mc:Ignorable="d"
+        xmlns:conv="clr-namespace:HotelApplication.Converters"
+        Title="EvictClient" SizeToContent="Height" Width="1000"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        Foreground="White"
+        FontSize="12">
+
+    <!-- DataContext -->
+    <Window.DataContext>
+        <vm:CostRegistrationViewModel/>
+    </Window.DataContext>
+
+
+    <!-- Ресурсы окна -->
+    <Window.Resources>
+
+        <!-- Конвертер, который возвращает обратное значение bool -->
+        <conv:BackBoolConverter x:Key="BackBoolConverter"/>
+
+        <!-- Конвертер, который возвращает строковое представление даты -->
+        <conv:DateConverter x:Key="DateConverter"/>
+
+        <!-- Конвертер, который возвращает стоимость проживанея -->
+        <conv:CoastRegistrationConverter x:Key="CoastRegistrationConverter"/>
+
+        <!-- Конвертер, который возвращает строковое представление комнаты -->
+        <conv:HotelRoomToString x:Key="HotelRoomToString"/>
+
+        <!-- Конвертер, который возвращает обратное значение bool -->
+        <conv:WindowStateConverter x:Key="WindowStateConverter"/>
+
+        <!-- Стиль Label -->
+        <Style TargetType="Label">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Margin" Value="20 0"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+
+        <!-- Стиль ComboBox -->
+        <Style TargetType="ComboBox">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Margin" Value="20 0"/>
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Foreground" Value="Black"/>
+        </Style>
+
+        <!-- Стиль TextBox -->
+        <Style TargetType="TextBox">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="Margin" Value="20 0"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="5 0 0 0"/>
+        </Style>
+
+    </Window.Resources>
+
+
+    <!-- Контент окна -->
+    <Border Background="#302E44"
+            CornerRadius="20">
+        <Grid>
+            <!-- Столбцы -->
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Строки -->
+            <Grid.RowDefinitions>
+                <RowDefinition Height="75"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <!-- Прямоугольник для перетаскивания окна -->
+            <Rectangle Fill="Transparent"
+                       Grid.ColumnSpan="2"/>
+
+            <!-- Заголовок окна -->
+            <Label Name="LblHeader" Content="Стоимость проживания клиента"
+                   FontSize="20"
+                   Margin="20"
+                   Grid.ColumnSpan="2"
+                   HorizontalAlignment="Center"/>
+
+            <!-- Данные -->
+            <Grid Grid.Row="1" 
+                  Grid.ColumnSpan="2">
+
+                <!-- Столбцы -->
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Строки -->
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <!-- Клиент -->
+                <StackPanel Grid.Row="0" Orientation="Vertical"
+                            VerticalAlignment="Center">
+                    <Label Content="Клиент:"/>
+                    <ComboBox ItemsSource="{Binding SelectedClientsList}"
+                              SelectedValue="{Binding SelectedClient}">
+
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="SelectionChanged">
+                                <i:InvokeCommandAction Command="{Binding SelectionClientRegistrationCommand}"/>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                    </ComboBox>
+                </StackPanel>
+
+
+                <!-- Поиск клиента -->
+                <StackPanel Grid.Column="1" Orientation="Vertical"
+                            VerticalAlignment="Center">
+
+                    <!--Заголовок -->
+                    <Label Content="Поиск клиента:"/>
+
+                    <!-- Поиск клиента -->
+                    <TextBox x:Name="TbxSearchClient">
+
+                        <!-- Запуск команды поска по триггеру -->
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="TextChanged">
+                                <i:InvokeCommandAction Command="{Binding SearchClientsCommand}"
+                                                       CommandParameter="{Binding Text, ElementName=TbxSearchClient}"/>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+
+                    </TextBox>
+                </StackPanel>
+
+                <!--#region Таблица с данными -->
+                <DataGrid Grid.Row="1" Grid.ColumnSpan="2" Margin="0 20" ItemsSource="{Binding SelectedRegistrationList}"
+                          AutoGenerateColumns="False"
+                          AlternationCount="2"
+                          Height="300"
+                          RowHeaderWidth="0"
+                          IsReadOnly="True"
+                          HorizontalAlignment="Left"
+                          SelectionMode="Single"
+                          Background="Transparent"
+                          CanUserSortColumns="False">
+
+                    <!--#region Заголовки таблицы-->
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Номер комнаты" Binding="{Binding HotelRoom.Number}" Width="20*"/>
+                        <DataGridTextColumn Header="Этаж" Binding="{Binding HotelRoom.Floor.Number}" Width="20*"/>
+                        <DataGridTextColumn Header="Город" Binding="{Binding City.Name}" Width="20*"/>
+                        <DataGridTextColumn Header="Длительность проживания" Binding="{Binding Duration}" Width="25*"/>
+                        <DataGridTextColumn Header="Дата регистрации" Binding="{Binding RegistrationDate, Converter={StaticResource DateConverter}}" Width="25*"/>
+                        <DataGridTextColumn Header="Стоимость (сутки)" Binding="{Binding HotelRoom.TypeHotelRoom.Price}" Width="20*"/>
+                        <DataGridTextColumn Header="Стоимость (всего)" Binding="{Binding Converter={StaticResource CoastRegistrationConverter}}" Width="20*"/>
+                    </DataGrid.Columns>
+                    <!--#endregion-->
+
+                </DataGrid>
+                <!--#endregion-->
+
+                    <!-- Кнопка Выход -->
+                <Button Grid.Row="3" Grid.ColumnSpan="2"
+                        Content="Выход"
+                        Background="#844EFF"
+                        IsCancel="True"
+                        Margin="20"
+                        Width="250"/>
+
+            </Grid>
+
+
+
+        </Grid>
+    </Border>
+</Window>

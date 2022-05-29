@@ -1,5 +1,4 @@
-﻿using HotelApplication.Core;
-using HotelApplication.Models;
+﻿using HotelApplication.Models;
 using HotelApplication.MVVM.View;
 using HotelClassLibrary.Controllers;
 using HotelClassLibrary.Models;
@@ -17,21 +16,38 @@ namespace HotelApplication.MVVM.ViewModel
         // количество записей
         public int CountRooms => Rooms.Count;
 
+
         // коллекция записей
         private BindingList<HotelRoom> _rooms = HotelController.GetHotelRoomsBindingList();
         public BindingList<HotelRoom> Rooms => _rooms;
+
+
+        // выбранная коллекция записей
+        private List<HotelRoom> _selectedRooms;
+        public List<HotelRoom> SelectedRoomsList
+        {
+            get => _selectedRooms;
+            set
+            {
+                _selectedRooms = value;
+                OnPropertyChanged("SelectedRoomsList");
+            }
+        }
 
 
         // выбранная запись в таблице
         public HotelRoom SelectedRoom { get; set; }
 
 
+        // выбрать только свободные номера
+        public bool IsSelectionByEmpty { get; set; }
+
         #region Конструкторы
 
         // конструктор по умолчанию
         public RoomsManagementViewModel()
         {
-
+            SelectedRoomsList = Rooms.ToList();
         }
 
         #endregion
@@ -60,7 +76,7 @@ namespace HotelApplication.MVVM.ViewModel
         public RelayCommand EvictClientRoomCommand => _evictClientRoomCommand ?? (_evictClientRoomCommand = new RelayCommand((o) =>
         {
             // запуск окна управления номером
-            new RoomView(SelectedRoom, WindowState.RemoveState).ShowDialog();
+            new RoomView(SelectedRoom).ShowDialog();
 
             // для того, чтоб сработало событие обновления данных
             SelectedRoom.Id = SelectedRoom.Id;
@@ -76,6 +92,18 @@ namespace HotelApplication.MVVM.ViewModel
             // запуск окна управления номером
             new CleaningRoomClientDateView().ShowDialog();
         }));
+
+
+        // информация об уборке по дате и клиенту
+        private RelayCommand _selectionByEmptyCommand;
+
+        public RelayCommand SelectionByEmptyCommand => _selectionByEmptyCommand ?? (_selectionByEmptyCommand = new RelayCommand((o) =>
+        {
+            SelectedRoomsList = IsSelectionByEmpty ? HotelController.Proc4() : Rooms.ToList();
+
+            OnPropertyChanged("CountRooms");
+        }));
+
 
         #endregion
 

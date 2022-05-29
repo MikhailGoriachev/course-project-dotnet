@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 
 using HotelClassLibrary.Controllers;        // контроллер
 using HotelClassLibrary.Models;             // модели
-using HotelApplication.Core;                // базовые классы
 using HotelApplication.MVVM.View;
 
 namespace HotelApplication.MVVM.ViewModel

@@ -1,5 +1,4 @@
-﻿using HotelApplication.Core;
-using HotelClassLibrary.Controllers;
+﻿using HotelClassLibrary.Controllers;
 using HotelClassLibrary.Models;
 using System;
 using System.Collections.Generic;

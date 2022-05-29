@@ -99,20 +99,16 @@ namespace HotelClassLibrary.Controllers
 
 
         // получить статус номера - свободен или занят (занято - true) в заданную дату
-        public static bool RoomIsBusy(HotelRoom room, DateTime date)
+        public static bool RoomIsBusy(HotelRoom room, DateTime date, List<HistoryRegistrationHotel> history = null)
         {
             // текущая дата
-            date = DateTime.Now.Date;
+            //date = DateTime.Now.Date;
 
-            var history = GetHistoryRegistrationHotel().FirstOrDefault(h =>
-                            {
-                                DateTime end = h.RegistrationDate.AddDays(h.Duration).Date;
+            var result = (history ?? GetHistoryRegistrationHotel()).FirstOrDefault(h => h.Duration != 0 && date.Date >= h.RegistrationDate.Date 
+                                                                    && date.Date < h.RegistrationDate.AddDays(h.Duration).Date
+                                                                    && h.HotelRoom.Id == room.Id);
 
-                                return h.Duration != 0 && date.Date >= h.RegistrationDate.Date && date < end
-                                       && h.HotelRoom.Id == room.Id;
-                            }) ;
-
-            return history != null;
+            return result != null;
         }
 
         // получить количество занятых мест номера - в заданную дату
@@ -465,10 +461,10 @@ namespace HotelClassLibrary.Controllers
 
 
         // получение счёта за проживание клиента
-        public static  int GetAccount(Client client, HotelRoom room = null, DateTime dateStart = new DateTime())
+        public static int GetAccount(Client client, HotelRoom room = null, DateTime dateStart = new DateTime())
         {
             // поиск записей регистрации по данному колиенту и дате
-            List<HistoryRegistrationHotel> histories = GetHistoryRegistrationHotelAsync().Result;
+            List<HistoryRegistrationHotel> histories = GetHistoryRegistrationHotel();
 
             // если текущая дата равна нулевой дате, то получить последнюю запись клиента
             HistoryRegistrationHotel elem = dateStart.Year == 0
@@ -540,12 +536,12 @@ namespace HotelClassLibrary.Controllers
 
 
         // 4.	Есть ли в гостинице свободные места и свободные номера и, если есть, то сколько и какие именно номера свободны.
-        public static  List<HotelRoom> Proc4()
+        public static List<HotelRoom> Proc4()
         {
             // текущая дата
             DateTime date = DateTime.Now;
 
-            return GetHotelRoomsAsync().Result.Where(h => !RoomIsBusy(h, date)).ToList();
+            return GetHotelRooms().Where(h => !RoomIsBusy(h, date)).ToList();
         }
 
 
@@ -655,6 +651,23 @@ namespace HotelClassLibrary.Controllers
 
             // получаение списка привязки
             return _data.HistoryRegistrationHotel.Local.ToBindingList();
+        }
+
+
+        // получение списка привязки
+        public static ObservableCollection<HistoryRegistrationHotel> GetHistoryRegistrationHotelObservable()
+        {
+            // загрузка данных
+            _data.HistoryRegistrationHotel.Include(r => r.Client)
+                                          .Include(r => r.Client.Person)
+                                          .Include(r => r.City)
+                                          .Include(r => r.HotelRoom)
+                                          .Include(r => r.HotelRoom.TypeHotelRoom)
+                                          .Include(r => r.HotelRoom.Floor)
+                                          .Load();
+
+            // получаение списка привязки
+            return _data.HistoryRegistrationHotel.Local;
         }
 
 

@@ -27,7 +27,16 @@
                         <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                                               VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
                     </Border>
+
+                    <ControlTemplate.Triggers>
+
+                        <!-- Set properties when mouse pointer is over the button. -->
+                        <Trigger Property="IsEnabled"  Value="False">
+                            <Setter Property="Border.Background" Value="Black"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
                 </ControlTemplate>
+                
             </Setter.Value>
         </Setter>
     </Style>

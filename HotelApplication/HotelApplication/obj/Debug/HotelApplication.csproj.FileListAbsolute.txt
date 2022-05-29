@@ -26,7 +26,6 @@ D:\01. Programming\00. Курсовые проекты\01. Курсовой пр
 D:\01. Programming\00. Курсовые проекты\01. Курсовой проект .NET Framework\HotelApplication\HotelApplication\obj\Debug\Theme\DataGridTheme.baml
 D:\01. Programming\00. Курсовые проекты\01. Курсовой проект .NET Framework\HotelApplication\HotelApplication\bin\Debug\EntityFramework.dll
 D:\01. Programming\00. Курсовые проекты\01. Курсовой проект .NET Framework\HotelApplication\HotelApplication\bin\Debug\EntityFramework.SqlServer.dll
-D:\01. Programming\00. Курсовые проекты\01. Курсовой проект .NET Framework\HotelApplication\HotelApplication\bin\Debug\HotelClassLibrary.dll
 D:\01. Programming\00. Курсовые проекты\01. Курсовой проект .NET Framework\HotelApplication\HotelApplication\bin\Debug\EntityFramework.xml
 D:\01. Programming\00. Курсовые проекты\01. Курсовой проект .NET Framework\HotelApplication\HotelApplication\bin\Debug\EntityFramework.SqlServer.xml
 D:\01. Programming\00. Курсовые проекты\01. Курсовой проект .NET Framework\HotelApplication\HotelApplication\bin\Debug\HotelClassLibrary.pdb
@@ -58,3 +57,8 @@ D:\01. Programming\00. Курсовые проекты\01. Курсовой пр
 D:\01. Programming\00. Курсовые проекты\01. Курсовой проект .NET Framework\HotelApplication\HotelApplication\obj\Debug\MVVM\View\RoomView.baml
 D:\01. Programming\00. Курсовые проекты\01. Курсовой проект .NET Framework\HotelApplication\HotelApplication\obj\Debug\MVVM\View\CleaningRoomClientDateView.g.cs
 D:\01. Programming\00. Курсовые проекты\01. Курсовой проект .NET Framework\HotelApplication\HotelApplication\obj\Debug\MVVM\View\CleaningRoomClientDateView.baml
+D:\01. Programming\00. Курсовые проекты\01. Курсовой проект .NET Framework\HotelApplication\HotelApplication\obj\Debug\MVVM\View\CostRegistrationView.g.cs
+D:\01. Programming\00. Курсовые проекты\01. Курсовой проект .NET Framework\HotelApplication\HotelApplication\obj\Debug\MVVM\View\CostRegistrationView.baml
+D:\01. Programming\00. Курсовые проекты\01. Курсовой проект .NET Framework\HotelApplication\HotelApplication\obj\Debug\MVVM\View\ReportView.g.cs
+D:\01. Programming\00. Курсовые проекты\01. Курсовой проект .NET Framework\HotelApplication\HotelApplication\obj\Debug\MVVM\View\ReportView.baml
+D:\01. Programming\00. Курсовые проекты\01. Курсовой проект .NET Framework\HotelApplication\HotelApplication\bin\Debug\HotelClassLibrary.dll

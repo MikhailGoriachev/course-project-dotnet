@@ -35,6 +35,18 @@ namespace HotelApplication.Converters
     }
 
 
+    // Конвертер возвращает "удалён"/"активен"
+    public class IsDeletedConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture) => (bool)value ? "Удалён" : "Активен";
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+
     // Конвертер возвращает строковое представление клиента
     public class ClientToStringConverter : IValueConverter
     {
@@ -181,6 +193,28 @@ namespace HotelApplication.Converters
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             return (WindowState)value == WindowState.AddState ? "Visible" : "Collapsed";
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+
+    // Конвертер возвращает стоимость за проживание клиента
+    public class CoastRegistrationConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value == null)
+                return null;
+
+            // приведение записи
+            HistoryRegistrationHotel registration = value as HistoryRegistrationHotel;
+
+            return registration.Duration * registration.HotelRoom.TypeHotelRoom.Price;
+            
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
